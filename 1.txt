@@ -1,0 +1,528 @@
+Folder PATH listing for volume Main
+Volume serial number is 340B-3AD5
+C:.
+©¦   .gitignore
+©¦   1.txt
+©¦   CMakeLists.txt
+©¦   del.bat
+©¦   fmt-LICENSE.rst
+©¦   LICENSE
+©¦   LICENSE-spdlog
+©¦   LICENSE.rst
+©¦   readme.md
+©¦   spdlog-LICENSE
+©¦   update-log.txt
+©¦   
+©À©¤©¤©¤build
+©¦       del.bat
+©¦       
+©À©¤©¤©¤config
+©¦       config.h.in
+©¦       
+©À©¤©¤©¤example
+©¦   ©¸©¤©¤©¤shared
+©¦           main.cc
+©¦           
+©À©¤©¤©¤ext
+©¦   ©À©¤©¤©¤fmt
+©¦   ©¦   ©¦   .clang-format
+©¦   ©¦   ©¦   .travis.yml
+©¦   ©¦   ©¦   ChangeLog.rst
+©¦   ©¦   ©¦   CMakeLists.txt
+©¦   ©¦   ©¦   CONTRIBUTING.md
+©¦   ©¦   ©¦   LICENSE.rst
+©¦   ©¦   ©¦   README.rst
+©¦   ©¦   ©¦   
+©¦   ©¦   ©À©¤©¤©¤doc
+©¦   ©¦   ©¦   ©¦   api.rst
+©¦   ©¦   ©¦   ©¦   build.py
+©¦   ©¦   ©¦   ©¦   CMakeLists.txt
+©¦   ©¦   ©¦   ©¦   conf.py
+©¦   ©¦   ©¦   ©¦   contents.rst
+©¦   ©¦   ©¦   ©¦   fmt.less
+©¦   ©¦   ©¦   ©¦   index.rst
+©¦   ©¦   ©¦   ©¦   python-license.txt
+©¦   ©¦   ©¦   ©¦   syntax.rst
+©¦   ©¦   ©¦   ©¦   usage.rst
+©¦   ©¦   ©¦   ©¦   
+©¦   ©¦   ©¦   ©À©¤©¤©¤basic-bootstrap
+©¦   ©¦   ©¦   ©¦       layout.html
+©¦   ©¦   ©¦   ©¦       README
+©¦   ©¦   ©¦   ©¦       theme.conf
+©¦   ©¦   ©¦   ©¦       
+©¦   ©¦   ©¦   ©À©¤©¤©¤bootstrap
+©¦   ©¦   ©¦   ©¦   ©¦   alerts.less
+©¦   ©¦   ©¦   ©¦   ©¦   badges.less
+©¦   ©¦   ©¦   ©¦   ©¦   bootstrap.less
+©¦   ©¦   ©¦   ©¦   ©¦   breadcrumbs.less
+©¦   ©¦   ©¦   ©¦   ©¦   button-groups.less
+©¦   ©¦   ©¦   ©¦   ©¦   buttons.less
+©¦   ©¦   ©¦   ©¦   ©¦   carousel.less
+©¦   ©¦   ©¦   ©¦   ©¦   close.less
+©¦   ©¦   ©¦   ©¦   ©¦   code.less
+©¦   ©¦   ©¦   ©¦   ©¦   component-animations.less
+©¦   ©¦   ©¦   ©¦   ©¦   dropdowns.less
+©¦   ©¦   ©¦   ©¦   ©¦   forms.less
+©¦   ©¦   ©¦   ©¦   ©¦   glyphicons.less
+©¦   ©¦   ©¦   ©¦   ©¦   grid.less
+©¦   ©¦   ©¦   ©¦   ©¦   input-groups.less
+©¦   ©¦   ©¦   ©¦   ©¦   jumbotron.less
+©¦   ©¦   ©¦   ©¦   ©¦   labels.less
+©¦   ©¦   ©¦   ©¦   ©¦   list-group.less
+©¦   ©¦   ©¦   ©¦   ©¦   media.less
+©¦   ©¦   ©¦   ©¦   ©¦   mixins.less
+©¦   ©¦   ©¦   ©¦   ©¦   modals.less
+©¦   ©¦   ©¦   ©¦   ©¦   navbar.less
+©¦   ©¦   ©¦   ©¦   ©¦   navs.less
+©¦   ©¦   ©¦   ©¦   ©¦   normalize.less
+©¦   ©¦   ©¦   ©¦   ©¦   pager.less
+©¦   ©¦   ©¦   ©¦   ©¦   pagination.less
+©¦   ©¦   ©¦   ©¦   ©¦   panels.less
+©¦   ©¦   ©¦   ©¦   ©¦   popovers.less
+©¦   ©¦   ©¦   ©¦   ©¦   print.less
+©¦   ©¦   ©¦   ©¦   ©¦   progress-bars.less
+©¦   ©¦   ©¦   ©¦   ©¦   responsive-embed.less
+©¦   ©¦   ©¦   ©¦   ©¦   responsive-utilities.less
+©¦   ©¦   ©¦   ©¦   ©¦   scaffolding.less
+©¦   ©¦   ©¦   ©¦   ©¦   tables.less
+©¦   ©¦   ©¦   ©¦   ©¦   theme.less
+©¦   ©¦   ©¦   ©¦   ©¦   thumbnails.less
+©¦   ©¦   ©¦   ©¦   ©¦   tooltip.less
+©¦   ©¦   ©¦   ©¦   ©¦   type.less
+©¦   ©¦   ©¦   ©¦   ©¦   utilities.less
+©¦   ©¦   ©¦   ©¦   ©¦   variables.less
+©¦   ©¦   ©¦   ©¦   ©¦   wells.less
+©¦   ©¦   ©¦   ©¦   ©¦   
+©¦   ©¦   ©¦   ©¦   ©¸©¤©¤©¤mixins
+©¦   ©¦   ©¦   ©¦           alerts.less
+©¦   ©¦   ©¦   ©¦           background-variant.less
+©¦   ©¦   ©¦   ©¦           border-radius.less
+©¦   ©¦   ©¦   ©¦           buttons.less
+©¦   ©¦   ©¦   ©¦           center-block.less
+©¦   ©¦   ©¦   ©¦           clearfix.less
+©¦   ©¦   ©¦   ©¦           forms.less
+©¦   ©¦   ©¦   ©¦           gradients.less
+©¦   ©¦   ©¦   ©¦           grid-framework.less
+©¦   ©¦   ©¦   ©¦           grid.less
+©¦   ©¦   ©¦   ©¦           hide-text.less
+©¦   ©¦   ©¦   ©¦           image.less
+©¦   ©¦   ©¦   ©¦           labels.less
+©¦   ©¦   ©¦   ©¦           list-group.less
+©¦   ©¦   ©¦   ©¦           nav-divider.less
+©¦   ©¦   ©¦   ©¦           nav-vertical-align.less
+©¦   ©¦   ©¦   ©¦           opacity.less
+©¦   ©¦   ©¦   ©¦           pagination.less
+©¦   ©¦   ©¦   ©¦           panels.less
+©¦   ©¦   ©¦   ©¦           progress-bar.less
+©¦   ©¦   ©¦   ©¦           reset-filter.less
+©¦   ©¦   ©¦   ©¦           resize.less
+©¦   ©¦   ©¦   ©¦           responsive-visibility.less
+©¦   ©¦   ©¦   ©¦           size.less
+©¦   ©¦   ©¦   ©¦           tab-focus.less
+©¦   ©¦   ©¦   ©¦           table-row.less
+©¦   ©¦   ©¦   ©¦           text-emphasis.less
+©¦   ©¦   ©¦   ©¦           text-overflow.less
+©¦   ©¦   ©¦   ©¦           vendor-prefixes.less
+©¦   ©¦   ©¦   ©¦           
+©¦   ©¦   ©¦   ©À©¤©¤©¤html
+©¦   ©¦   ©¦   ©¦   ©¦   api.html
+©¦   ©¦   ©¦   ©¦   ©¦   contents.html
+©¦   ©¦   ©¦   ©¦   ©¦   genindex.html
+©¦   ©¦   ©¦   ©¦   ©¦   index.html
+©¦   ©¦   ©¦   ©¦   ©¦   objects.inv
+©¦   ©¦   ©¦   ©¦   ©¦   search.html
+©¦   ©¦   ©¦   ©¦   ©¦   searchindex.js
+©¦   ©¦   ©¦   ©¦   ©¦   syntax.html
+©¦   ©¦   ©¦   ©¦   ©¦   usage.html
+©¦   ©¦   ©¦   ©¦   ©¦   
+©¦   ©¦   ©¦   ©¦   ©À©¤©¤©¤_sources
+©¦   ©¦   ©¦   ©¦   ©¦       api.txt
+©¦   ©¦   ©¦   ©¦   ©¦       contents.txt
+©¦   ©¦   ©¦   ©¦   ©¦       index.txt
+©¦   ©¦   ©¦   ©¦   ©¦       syntax.txt
+©¦   ©¦   ©¦   ©¦   ©¦       usage.txt
+©¦   ©¦   ©¦   ©¦   ©¦       
+©¦   ©¦   ©¦   ©¦   ©¸©¤©¤©¤_static
+©¦   ©¦   ©¦   ©¦       ©¦   ajax-loader.gif
+©¦   ©¦   ©¦   ©¦       ©¦   basic.css
+©¦   ©¦   ©¦   ©¦       ©¦   bootstrap.min.js
+©¦   ©¦   ©¦   ©¦       ©¦   comment-bright.png
+©¦   ©¦   ©¦   ©¦       ©¦   comment-close.png
+©¦   ©¦   ©¦   ©¦       ©¦   comment.png
+©¦   ©¦   ©¦   ©¦       ©¦   doctools.js
+©¦   ©¦   ©¦   ©¦       ©¦   down-pressed.png
+©¦   ©¦   ©¦   ©¦       ©¦   down.png
+©¦   ©¦   ©¦   ©¦       ©¦   file.png
+©¦   ©¦   ©¦   ©¦       ©¦   fmt.css
+©¦   ©¦   ©¦   ©¦       ©¦   jquery-1.11.1.js
+©¦   ©¦   ©¦   ©¦       ©¦   jquery.js
+©¦   ©¦   ©¦   ©¦       ©¦   minus.png
+©¦   ©¦   ©¦   ©¦       ©¦   plus.png
+©¦   ©¦   ©¦   ©¦       ©¦   pygments.css
+©¦   ©¦   ©¦   ©¦       ©¦   searchtools.js
+©¦   ©¦   ©¦   ©¦       ©¦   underscore-1.3.1.js
+©¦   ©¦   ©¦   ©¦       ©¦   underscore.js
+©¦   ©¦   ©¦   ©¦       ©¦   up-pressed.png
+©¦   ©¦   ©¦   ©¦       ©¦   up.png
+©¦   ©¦   ©¦   ©¦       ©¦   websupport.js
+©¦   ©¦   ©¦   ©¦       ©¦   
+©¦   ©¦   ©¦   ©¦       ©¸©¤©¤©¤fonts
+©¦   ©¦   ©¦   ©¦               glyphicons-halflings-regular.eot
+©¦   ©¦   ©¦   ©¦               glyphicons-halflings-regular.svg
+©¦   ©¦   ©¦   ©¦               glyphicons-halflings-regular.ttf
+©¦   ©¦   ©¦   ©¦               glyphicons-halflings-regular.woff
+©¦   ©¦   ©¦   ©¦               
+©¦   ©¦   ©¦   ©À©¤©¤©¤_static
+©¦   ©¦   ©¦   ©¦   ©¦   bootstrap.min.js
+©¦   ©¦   ©¦   ©¦   ©¦   
+©¦   ©¦   ©¦   ©¦   ©¸©¤©¤©¤fonts
+©¦   ©¦   ©¦   ©¦           glyphicons-halflings-regular.eot
+©¦   ©¦   ©¦   ©¦           glyphicons-halflings-regular.svg
+©¦   ©¦   ©¦   ©¦           glyphicons-halflings-regular.ttf
+©¦   ©¦   ©¦   ©¦           glyphicons-halflings-regular.woff
+©¦   ©¦   ©¦   ©¦           
+©¦   ©¦   ©¦   ©¸©¤©¤©¤_templates
+©¦   ©¦   ©¦           layout.html
+©¦   ©¦   ©¦           search.html
+©¦   ©¦   ©¦           
+©¦   ©¦   ©À©¤©¤©¤include
+©¦   ©¦   ©¦   ©¸©¤©¤©¤fmt
+©¦   ©¦   ©¦           chrono.h
+©¦   ©¦   ©¦           color.h
+©¦   ©¦   ©¦           compile.h
+©¦   ©¦   ©¦           core.h
+©¦   ©¦   ©¦           format-inl.h
+©¦   ©¦   ©¦           format.h
+©¦   ©¦   ©¦           locale.h
+©¦   ©¦   ©¦           os.h
+©¦   ©¦   ©¦           ostream.h
+©¦   ©¦   ©¦           posix.h
+©¦   ©¦   ©¦           printf.h
+©¦   ©¦   ©¦           ranges.h
+©¦   ©¦   ©¦           
+©¦   ©¦   ©À©¤©¤©¤src
+©¦   ©¦   ©¦       format.cc
+©¦   ©¦   ©¦       os.cc
+©¦   ©¦   ©¦       
+©¦   ©¦   ©À©¤©¤©¤support
+©¦   ©¦   ©¦   ©¦   Android.mk
+©¦   ©¦   ©¦   ©¦   AndroidManifest.xml
+©¦   ©¦   ©¦   ©¦   appveyor-build.py
+©¦   ©¦   ©¦   ©¦   appveyor.yml
+©¦   ©¦   ©¦   ©¦   build.gradle
+©¦   ©¦   ©¦   ©¦   C++.sublime-syntax
+©¦   ©¦   ©¦   ©¦   compute-powers.py
+©¦   ©¦   ©¦   ©¦   docopt.py
+©¦   ©¦   ©¦   ©¦   fmt.pro
+©¦   ©¦   ©¦   ©¦   manage.py
+©¦   ©¦   ©¦   ©¦   README
+©¦   ©¦   ©¦   ©¦   rst2md.py
+©¦   ©¦   ©¦   ©¦   travis-build.py
+©¦   ©¦   ©¦   ©¦   update-coverity-branch.py
+©¦   ©¦   ©¦   ©¦   Vagrantfile
+©¦   ©¦   ©¦   ©¦   
+©¦   ©¦   ©¦   ©À©¤©¤©¤cmake
+©¦   ©¦   ©¦   ©¦       cxx14.cmake
+©¦   ©¦   ©¦   ©¦       FindSetEnv.cmake
+©¦   ©¦   ©¦   ©¦       fmt-config.cmake.in
+©¦   ©¦   ©¦   ©¦       fmt.pc.in
+©¦   ©¦   ©¦   ©¦       JoinPaths.cmake
+©¦   ©¦   ©¦   ©¦       
+©¦   ©¦   ©¦   ©¸©¤©¤©¤rtd
+©¦   ©¦   ©¦       ©¦   conf.py
+©¦   ©¦   ©¦       ©¦   index.rst
+©¦   ©¦   ©¦       ©¦   
+©¦   ©¦   ©¦       ©¸©¤©¤©¤theme
+©¦   ©¦   ©¦               layout.html
+©¦   ©¦   ©¦               theme.conf
+©¦   ©¦   ©¦               
+©¦   ©¦   ©¸©¤©¤©¤test
+©¦   ©¦       ©¦   assert-test.cc
+©¦   ©¦       ©¦   chrono-test.cc
+©¦   ©¦       ©¦   CMakeLists.txt
+©¦   ©¦       ©¦   color-test.cc
+©¦   ©¦       ©¦   compile-test.cc
+©¦   ©¦       ©¦   core-test.cc
+©¦   ©¦       ©¦   custom-formatter-test.cc
+©¦   ©¦       ©¦   format
+©¦   ©¦       ©¦   format-dyn-args-test.cc
+©¦   ©¦       ©¦   format-impl-test.cc
+©¦   ©¦       ©¦   format-test.cc
+©¦   ©¦       ©¦   gmock-gtest-all.cc
+©¦   ©¦       ©¦   grisu-test.cc
+©¦   ©¦       ©¦   gtest-extra-test.cc
+©¦   ©¦       ©¦   gtest-extra.cc
+©¦   ©¦       ©¦   gtest-extra.h
+©¦   ©¦       ©¦   header-only-test.cc
+©¦   ©¦       ©¦   header-only-test2.cc
+©¦   ©¦       ©¦   locale-test.cc
+©¦   ©¦       ©¦   mock-allocator.h
+©¦   ©¦       ©¦   os-test.cc
+©¦   ©¦       ©¦   ostream-test.cc
+©¦   ©¦       ©¦   posix-mock-test.cc
+©¦   ©¦       ©¦   posix-mock.h
+©¦   ©¦       ©¦   printf-test.cc
+©¦   ©¦       ©¦   ranges-test.cc
+©¦   ©¦       ©¦   scan-test.cc
+©¦   ©¦       ©¦   scan.h
+©¦   ©¦       ©¦   std-format-test.cc
+©¦   ©¦       ©¦   test-assert.h
+©¦   ©¦       ©¦   test-main.cc
+©¦   ©¦       ©¦   util.cc
+©¦   ©¦       ©¦   util.h
+©¦   ©¦       ©¦   
+©¦   ©¦       ©À©¤©¤©¤add-subdirectory-test
+©¦   ©¦       ©¦       CMakeLists.txt
+©¦   ©¦       ©¦       main.cc
+©¦   ©¦       ©¦       
+©¦   ©¦       ©À©¤©¤©¤compile-error-test
+©¦   ©¦       ©¦       CMakeLists.txt
+©¦   ©¦       ©¦       
+©¦   ©¦       ©À©¤©¤©¤cuda-test
+©¦   ©¦       ©¦       CMakeLists.txt
+©¦   ©¦       ©¦       cpp14.cc
+©¦   ©¦       ©¦       cuda-cpp14.cu
+©¦   ©¦       ©¦       
+©¦   ©¦       ©À©¤©¤©¤find-package-test
+©¦   ©¦       ©¦       CMakeLists.txt
+©¦   ©¦       ©¦       main.cc
+©¦   ©¦       ©¦       
+©¦   ©¦       ©À©¤©¤©¤fuzzing
+©¦   ©¦       ©¦       build.sh
+©¦   ©¦       ©¦       chrono_duration.cpp
+©¦   ©¦       ©¦       CMakeLists.txt
+©¦   ©¦       ©¦       fuzzer_common.h
+©¦   ©¦       ©¦       main.cpp
+©¦   ©¦       ©¦       named_arg.cpp
+©¦   ©¦       ©¦       one_arg.cpp
+©¦   ©¦       ©¦       README.md
+©¦   ©¦       ©¦       sprintf.cpp
+©¦   ©¦       ©¦       two_args.cpp
+©¦   ©¦       ©¦       
+©¦   ©¦       ©À©¤©¤©¤gmock
+©¦   ©¦       ©¦       gmock.h
+©¦   ©¦       ©¦       
+©¦   ©¦       ©¸©¤©¤©¤gtest
+©¦   ©¦               gtest-spi.h
+©¦   ©¦               gtest.h
+©¦   ©¦               
+©¦   ©¸©¤©¤©¤spdlog
+©¦       ©¦   .clang-format
+©¦       ©¦   .clang-tidy
+©¦       ©¦   .gitattributes
+©¦       ©¦   .gitignore
+©¦       ©¦   .travis.yml
+©¦       ©¦   appveyor.yml
+©¦       ©¦   CMakeLists.txt
+©¦       ©¦   INSTALL
+©¦       ©¦   LICENSE
+©¦       ©¦   README.md
+©¦       ©¦   
+©¦       ©À©¤©¤©¤bench
+©¦       ©¦       async_bench.cpp
+©¦       ©¦       bench.cpp
+©¦       ©¦       CMakeLists.txt
+©¦       ©¦       formatter-bench.cpp
+©¦       ©¦       latency.cpp
+©¦       ©¦       utils.h
+©¦       ©¦       
+©¦       ©À©¤©¤©¤cmake
+©¦       ©¦       ide.cmake
+©¦       ©¦       pch.h.in
+©¦       ©¦       spdlog.pc.in
+©¦       ©¦       spdlogConfig.cmake.in
+©¦       ©¦       spdlogCPack.cmake
+©¦       ©¦       utils.cmake
+©¦       ©¦       version.rc.in
+©¦       ©¦       
+©¦       ©À©¤©¤©¤example
+©¦       ©¦       CMakeLists.txt
+©¦       ©¦       example.cpp
+©¦       ©¦       
+©¦       ©À©¤©¤©¤include
+©¦       ©¦   ©¸©¤©¤©¤spdlog
+©¦       ©¦       ©¦   async.h
+©¦       ©¦       ©¦   async_logger-inl.h
+©¦       ©¦       ©¦   async_logger.h
+©¦       ©¦       ©¦   common-inl.h
+©¦       ©¦       ©¦   common.h
+©¦       ©¦       ©¦   formatter.h
+©¦       ©¦       ©¦   fwd.h
+©¦       ©¦       ©¦   logger-inl.h
+©¦       ©¦       ©¦   logger.h
+©¦       ©¦       ©¦   pattern_formatter-inl.h
+©¦       ©¦       ©¦   pattern_formatter.h
+©¦       ©¦       ©¦   spdlog-inl.h
+©¦       ©¦       ©¦   spdlog.h
+©¦       ©¦       ©¦   stopwatch.h
+©¦       ©¦       ©¦   tweakme.h
+©¦       ©¦       ©¦   version.h
+©¦       ©¦       ©¦   
+©¦       ©¦       ©À©¤©¤©¤cfg
+©¦       ©¦       ©¦       argv.h
+©¦       ©¦       ©¦       env.h
+©¦       ©¦       ©¦       helpers-inl.h
+©¦       ©¦       ©¦       helpers.h
+©¦       ©¦       ©¦       log_levels.h
+©¦       ©¦       ©¦       
+©¦       ©¦       ©À©¤©¤©¤details
+©¦       ©¦       ©¦       backtracer-inl.h
+©¦       ©¦       ©¦       backtracer.h
+©¦       ©¦       ©¦       circular_q.h
+©¦       ©¦       ©¦       console_globals.h
+©¦       ©¦       ©¦       file_helper-inl.h
+©¦       ©¦       ©¦       file_helper.h
+©¦       ©¦       ©¦       fmt_helper.h
+©¦       ©¦       ©¦       log_msg-inl.h
+©¦       ©¦       ©¦       log_msg.h
+©¦       ©¦       ©¦       log_msg_buffer-inl.h
+©¦       ©¦       ©¦       log_msg_buffer.h
+©¦       ©¦       ©¦       mpmc_blocking_q.h
+©¦       ©¦       ©¦       null_mutex.h
+©¦       ©¦       ©¦       os-inl.h
+©¦       ©¦       ©¦       os.h
+©¦       ©¦       ©¦       periodic_worker-inl.h
+©¦       ©¦       ©¦       periodic_worker.h
+©¦       ©¦       ©¦       registry-inl.h
+©¦       ©¦       ©¦       registry.h
+©¦       ©¦       ©¦       synchronous_factory.h
+©¦       ©¦       ©¦       tcp_client-windows.h
+©¦       ©¦       ©¦       tcp_client.h
+©¦       ©¦       ©¦       thread_pool-inl.h
+©¦       ©¦       ©¦       thread_pool.h
+©¦       ©¦       ©¦       windows_include.h
+©¦       ©¦       ©¦       
+©¦       ©¦       ©À©¤©¤©¤fmt
+©¦       ©¦       ©¦   ©¦   bin_to_hex.h
+©¦       ©¦       ©¦   ©¦   chrono.h
+©¦       ©¦       ©¦   ©¦   fmt.h
+©¦       ©¦       ©¦   ©¦   ostr.h
+©¦       ©¦       ©¦   ©¦   
+©¦       ©¦       ©¦   ©¸©¤©¤©¤bundled
+©¦       ©¦       ©¦           chrono.h
+©¦       ©¦       ©¦           color.h
+©¦       ©¦       ©¦           compile.h
+©¦       ©¦       ©¦           core.h
+©¦       ©¦       ©¦           format-inl.h
+©¦       ©¦       ©¦           format.h
+©¦       ©¦       ©¦           LICENSE.rst
+©¦       ©¦       ©¦           locale.h
+©¦       ©¦       ©¦           os.h
+©¦       ©¦       ©¦           ostream.h
+©¦       ©¦       ©¦           posix.h
+©¦       ©¦       ©¦           printf.h
+©¦       ©¦       ©¦           ranges.h
+©¦       ©¦       ©¦           
+©¦       ©¦       ©¸©¤©¤©¤sinks
+©¦       ©¦               android_sink.h
+©¦       ©¦               ansicolor_sink-inl.h
+©¦       ©¦               ansicolor_sink.h
+©¦       ©¦               base_sink-inl.h
+©¦       ©¦               base_sink.h
+©¦       ©¦               basic_file_sink-inl.h
+©¦       ©¦               basic_file_sink.h
+©¦       ©¦               daily_file_sink.h
+©¦       ©¦               dist_sink.h
+©¦       ©¦               dup_filter_sink.h
+©¦       ©¦               msvc_sink.h
+©¦       ©¦               null_sink.h
+©¦       ©¦               ostream_sink.h
+©¦       ©¦               ringbuffer_sink.h
+©¦       ©¦               rotating_file_sink-inl.h
+©¦       ©¦               rotating_file_sink.h
+©¦       ©¦               sink-inl.h
+©¦       ©¦               sink.h
+©¦       ©¦               stdout_color_sinks-inl.h
+©¦       ©¦               stdout_color_sinks.h
+©¦       ©¦               stdout_sinks-inl.h
+©¦       ©¦               stdout_sinks.h
+©¦       ©¦               syslog_sink.h
+©¦       ©¦               systemd_sink.h
+©¦       ©¦               tcp_sink.h
+©¦       ©¦               wincolor_sink-inl.h
+©¦       ©¦               wincolor_sink.h
+©¦       ©¦               win_eventlog_sink.h
+©¦       ©¦               
+©¦       ©À©¤©¤©¤logos
+©¦       ©¦       jetbrains-variant-4.svg
+©¦       ©¦       
+©¦       ©À©¤©¤©¤scripts
+©¦       ©¦       extract_version.py
+©¦       ©¦       format.sh
+©¦       ©¦       
+©¦       ©À©¤©¤©¤src
+©¦       ©¦       async.cpp
+©¦       ©¦       cfg.cpp
+©¦       ©¦       color_sinks.cpp
+©¦       ©¦       file_sinks.cpp
+©¦       ©¦       fmt.cpp
+©¦       ©¦       spdlog.cpp
+©¦       ©¦       stdout_sinks.cpp
+©¦       ©¦       
+©¦       ©¸©¤©¤©¤tests
+©¦               catch.hpp
+©¦               catch.license
+©¦               CMakeLists.txt
+©¦               includes.h
+©¦               main.cpp
+©¦               test_async.cpp
+©¦               test_backtrace.cpp
+©¦               test_cfg.cpp
+©¦               test_create_dir.cpp
+©¦               test_daily_logger.cpp
+©¦               test_dup_filter.cpp
+©¦               test_errors.cpp
+©¦               test_eventlog.cpp
+©¦               test_file_helper.cpp
+©¦               test_file_logging.cpp
+©¦               test_fmt_helper.cpp
+©¦               test_macros.cpp
+©¦               test_misc.cpp
+©¦               test_mpmc_q.cpp
+©¦               test_pattern_formatter.cpp
+©¦               test_registry.cpp
+©¦               test_sink.h
+©¦               test_stdout_api.cpp
+©¦               test_stopwatch.cpp
+©¦               test_systemd.cpp
+©¦               test_time_point.cpp
+©¦               utils.cpp
+©¦               utils.h
+©¦               
+©À©¤©¤©¤include
+©¦   ©¦   config.h
+©¦   ©¦   universe_def.h
+©¦   ©¦   utils.h
+©¦   ©¦   
+©¦   ©¸©¤©¤©¤serial_port
+©¦           serial_port_interface.h
+©¦           serial_port_win_base.h
+©¦           serial_port_win_info.h
+©¦           
+©À©¤©¤©¤other_tools
+©¦   ©¦   sp_acceport.png
+©¦   ©¦   sp_vsp.png
+©¦   ©¦   VSPDP_9349.zip
+©¦   ©¦   
+©¦   ©¸©¤©¤©¤AccessPort_23021
+©¦       ©¦   AccessPort.exe
+©¦       ©¦   AccessPort.ini
+©¦       ©¦   Apsm.sys
+©¦       ©¦   Apsm_x64.sys
+©¦       ©¦   license.txt
+©¦       ©¦   readme_en_US.txt
+©¦       ©¦   readme_zh_CN.txt
+©¦       ©¦   readme_zh_TW.txt
+©¦       ©¦   
+©¦       ©¸©¤©¤©¤Language
+©¦               apchs.ini
+©¦               apcht.ini
+©¦               apeng.ini
+©¦               aprus.ini
+©¦               
+©¸©¤©¤©¤src
+        serial_port_interface.cpp
+        serial_port_win_base.cpp
+        serial_port_win_info.cpp
+        utils.cpp
+        

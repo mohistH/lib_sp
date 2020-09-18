@@ -1,0 +1,12 @@
+#pragma once
+#cmakedefine used_in_mfc
+
+// version 
+#define version_1 @version_1@
+#define version_2 @version_2@
+#define version_3 @version_3@
+#define version_4 "@version_4@"
+
+
+
+
