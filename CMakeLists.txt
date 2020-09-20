@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 #工程名
-project(lib_serial_port VERSION 1.0.1)
+project(lib_serial_port VERSION 1.0.2)
 
 
 # library version
@@ -19,8 +19,6 @@ set (InternalName 			"Serial Port")
 set (copyright_from 		"mohistH")
 set (OriginalFilename 		"serial_port(64).dll")
 set (ProductName			"Serial Port Library")
-
-
 
 
 # PRIVATE	配置仅在编译的时候需要满足
@@ -66,9 +64,10 @@ else()
 	endif(lib_sp_is_x64)
 endif(CMAKE_CL_64)
 
-# set_project_name
+
+# set cmake file'dir： to/path/serial_port/cmake/
 # -------------------------------------------------------------------------------------
-set(lib_name "")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 # set header files
 # -------------------------------------------------------------------------------------
@@ -106,14 +105,13 @@ function (lib_sp_build_win used_in_mfc_flag )
 				
 		if(MSVC)
 			set(version_rc_win "${CMAKE_CURRENT_SOURCE_DIR}/src/version.rc")
-			add_library(${lib_name} ${lib_type} ${version_rc_win})
+			add_library(${PROJECT_NAME} ${lib_type} ${version_rc_win})
 		else()
-			add_library(${lib_name} ${lib_type} )
+			add_library(${PROJECT_NAME} ${lib_type} )
 		endif(MSVC)
 			
 		if(used_in_mfc_flag)
-			# target_compile_definitions(serial_port PRIVATE _AFXDLL)
-			target_compile_definitions(${lib_name} PRIVATE _AFXDLL)
+			target_compile_definitions(${PROJECT_NAME} PRIVATE _AFXDLL)
 			
 			# shared dll
 			if(lib_type)
@@ -124,51 +122,52 @@ function (lib_sp_build_win used_in_mfc_flag )
 			endif()
 		endif(used_in_mfc_flag)
 
-		# .h and .cxx files
-		target_sources(${lib_name} PRIVATE ${sp_src} ${sp_inc})
+		
 
 		if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 			# set vs support cxx11
 			if (MSVC_VERSION GREATER_EQUAL "1910")	# 1910 = VS2017 15.0
 				add_compile_options("/Zc:__cplusplus")
-				target_compile_definitions(${lib_name} PRIVATE _X86_ UNICODE _UNICODE)				
+				target_compile_definitions(${PROJECT_NAME} PRIVATE _X86_ UNICODE _UNICODE)				
 			endif()
 		endif()	
 	
-		
 		# 
-		target_link_libraries(${lib_name} PRIVATE setupapi)
-		# set 
-		target_include_directories(${lib_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
-		# use c++11
-		target_compile_features(${lib_name} PRIVATE cxx_std_11)
-		# vesion
-		set(version_str ${version_1}.${version_2}.${version_3}.${version_4})
-		message("version=${version_str}")
-		# set(ver_str "")
-		# string(REPLACE ";" "." ${ver_str} ${version_str})
-		# message("version=${version_str}")
-		set_target_properties(${lib_name} PROPERTIES VERSION ${version_str} SOVERSION 1)
-		
+		target_link_libraries(${PROJECT_NAME} PRIVATE setupapi)
 	ENDIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
+	
+	# .h and .cxx files
+	target_sources(${PROJECT_NAME} PRIVATE ${sp_src} ${sp_inc})
+
+	# set 
+	target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+	# use c++11
+	target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
+	# vesion
+	set(version_str ${version_1}.${version_2}.${version_3}.${version_4})
+	set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${version_str} SOVERSION 1)
+
+	# to quto third project
+	# ---------------------------------
+	# spdlog
+	include(spdlog)
+	target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+	# fmt
+	include(fmt)
+	target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
+
+	# ---------------------------------
 
 endfunction()
 
 
 
-# used this library in mfc ? 
-#-------------------------------------------------------------------------------------
-# if(used_in_mfc)
-	# set(CMAKE_CXX_FLAGS_RELEASE "/MT")
-    # set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
-# endif(used_in_mfc)
-
 # create shared or static library project
 # -------------------------------------------------------------------------------------
 if(lib_sp_is_x64)
-	set(lib_name "serial_port64")
+	set(PROJECT_NAME "serial_port64")
 else()
-	set(lib_name "serial_port")
+	set(PROJECT_NAME "serial_port")
 endif(lib_sp_is_x64)
 
 lib_sp_build_win(used_in_mfc)
@@ -194,7 +193,7 @@ if(example_shared)
 	# .h and .cxx files
 	target_sources(example_shared PRIVATE ${exam_file_h} ${exam_file_cc})
 	#
-	target_link_libraries(example_shared PRIVATE ${lib_name})
+	target_link_libraries(example_shared PRIVATE ${PROJECT_NAME})
 	#  
 	target_include_directories(example_shared PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 	#

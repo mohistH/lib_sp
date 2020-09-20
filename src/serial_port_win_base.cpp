@@ -33,6 +33,24 @@ namespace lib_sp
 		{
 			// to close
 			close();
+
+			if (_sp_param._spp._is_to_log)
+			{
+#ifdef _lib_sp_use_spdlog_
+				try
+				{
+					if (_sp_param._plog)
+						spdlog::shutdown();
+				}
+				catch (const spdlog::spdlog_ex &ex)
+				{
+					// an error occured, but do anything
+				}
+
+#endif // _lib_sp_use_spdlog_
+			}
+			
+
 		}
 		else
 		{
@@ -52,6 +70,7 @@ namespace lib_sp
 		if (0 == spp._name.length())
 		{
 			ret_val = -1;
+			log("init-failure, the comm's name is null");
 			return ret_val;
 		}
 
@@ -64,6 +83,18 @@ namespace lib_sp
 
 		// 4. set flag is true: is_init
 		_sp_param._is_init = true;
+
+
+#ifdef _lib_sp_use_spdlog_
+		if (_sp_param._spp._is_to_log)
+		{
+			auto max_size = 1024 * 1024 * 5;
+			auto max_files = 3;
+			_sp_param._plog = spdlog::rotating_logger_mt("lib_sp_log", "log/lib_sp_log.log", max_size, max_files);
+		}
+#endif //! _lib_sp_use_spdlog_
+
+		log("init-success");
 
 		return ret_val;
 	}
@@ -86,6 +117,7 @@ namespace lib_sp
 		if (!_sp_param._is_init)
 		{
 			ret_val = -1;
+			log("open-failure, the comm doesnt open, you should run <init> function to init");
 			return ret_val;
 		}
 
@@ -166,6 +198,8 @@ namespace lib_sp
 								sp_thread._is_running	= false;
 								//ret_val.set(GetLastError(), "GetLastError" );
 								ret_val = GetLastError();
+								log("open-failure, to create thread error, GetLastError() = {}", ret_val);
+								
 							} /// !
 						}
 						else
@@ -173,6 +207,8 @@ namespace lib_sp
 							// Failed to set Comm Mask. params are invalid
 							//ret_val.set(-3, "parameters are invalid" );
 							ret_val = -3;
+							log("open-failure, parameters to set comm mask are invalid");
+
 						} /// !SetCommMask
 					} ///!lib_sp::mode_async == spp._op_mode
 					else  
@@ -190,6 +226,7 @@ namespace lib_sp
 				{
 					//ret_val.set(-3, "parameters are invalid" );
 					ret_val = -6;
+					log("open-failure, parameters to set comm mask are invalid");
 				}
 			}
 			else /// INVALID_HANDLE_VALUE == com._handle_com, failure
@@ -201,6 +238,7 @@ namespace lib_sp
 					case ERROR_FILE_NOT_FOUND:
 					{
 						//ret_val.set(-2, "failure, cannot find the com");
+						log("open-failure, failure, cannot find the comm");
 						ret_val = -2;
 					}
 					break;
@@ -209,12 +247,14 @@ namespace lib_sp
 					case ERROR_ACCESS_DENIED:
 					{
 						//ret_val.set(-3, "failure, the com denied access");
+						log("open-failure, failure, the comm denied access");
 						ret_val = -3;
 					}
 					break;
 
 					default:
 						//ret_val.set(-4, "failure, unknow error" );
+						log("open-failure, failure,  unknow error");
 						ret_val = -4;
 						break;
 				} /// swich
@@ -224,6 +264,7 @@ namespace lib_sp
 		{
 			//ret_val.set(-5, "failure, the comm is opened" );
 			ret_val = -5;
+			log("open-failure, failure,  the comm is opened");
 		}
 
 		// to close port if an error occured
@@ -232,6 +273,8 @@ namespace lib_sp
 		{
 			close();
 		}
+
+		log("open-success");
 	
 		return ret_val;
 	}
@@ -268,13 +311,17 @@ namespace lib_sp
 			{
 				//ret_val.set(-1, "failure, serial port doesnt open");
 				ret_val = -1;
+				log("close-failure, serial port doesnt open");
 			}
 		}
 		catch (...)
 		{
 			//ret_val.set( GetLastError(), "GetLastError" );
 			ret_val = GetLastError();
+			log("close-failure, an error occurred, GetLastError() = {}", ret_val);
 		}
+
+		log("close-success");
 
 		return ret_val;
 	}
@@ -308,6 +355,7 @@ namespace lib_sp
 		{
 			//ret_val.set(-1, "failure, pdata parameter is null / data_len is 0");
 			ret_val		= -1;
+			log("send-failure, pdata parameter is null / data_len is 0");
 
 			return ret_val;
 		}
@@ -344,6 +392,7 @@ namespace lib_sp
 						case ERROR_IO_PENDING:
 						{
 							bwrite			= FALSE;
+							// log("send-failure 395, an error occurred while writing, GetLastError() ={}", error_id);
 							len_real_write	= -1;
 						}
 						break;
@@ -351,18 +400,21 @@ namespace lib_sp
 						// comm denied to access
 						case ERROR_ACCESS_DENIED:
 						{
+							log("send-failure 403, an error occurred while writing, GetLastError() ={}", error_id);
 						}
 						break;
 
 						// comm is invalid , or it doesnt open
 						case ERROR_INVALID_HANDLE:
 						{
+							log("send-failure 410, an error occurred while writing, GetLastError() ={}", error_id);
 						}
 						break;
 
 						// disconnected while connectting
 						case ERROR_BAD_COMMAND:
 						{
+							log("send-failure 417, an error occurred while writing, GetLastError() ={}", error_id);
 						}
 						break;
 
@@ -373,6 +425,7 @@ namespace lib_sp
 					else
 					{
 						// it written successfully
+						log("send-success");
 					}
 
 					// 
@@ -387,6 +440,7 @@ namespace lib_sp
 					{
 						//ret_val.set(GetLastError(), "GetLastError");
 						ret_val = GetLastError();
+						log("send-failure 443, an error occurred while writing, GetLastError() ={}", ret_val);
 					}
 					else
 					{
@@ -398,11 +452,13 @@ namespace lib_sp
 					if (WriteFile(comm._handle, (void*)pdata, (DWORD)data_len, &len_real_write, NULL))
 					{
 						// successfully
+						log("send-success");
 					}
 					else
 					{
 						//ret_val.set(GetLastError(), "GetLastError");
 						ret_val = GetLastError();
+						log("send-failure 461, GetLastError()={}", ret_val);
 					}
 
 				} /// lib_sp::mode_async end
@@ -412,6 +468,7 @@ namespace lib_sp
 			else
 			{
 				// comm doesnt open
+				log("send-failure 471, the comm doesnt open");
 			}
 
 			// 3. doesnt open, canot send the data 
@@ -421,7 +478,8 @@ namespace lib_sp
 		catch (...)
 		{
 			//ret_val.set(GetLastError(), "GetLastError");
-			ret_val = GetLastError();;
+			ret_val = GetLastError();
+			log("send-failure 482, an error occured, GetLastError() = {}", ret_val);
 		}
 
 		return ret_val;
@@ -432,7 +490,12 @@ namespace lib_sp
 	*/
 	std::string serial_port_win_base::get_version() noexcept
 	{
-		return std::string("1.0.0.15092020");
+#ifdef _lib_sp_use_fmt_
+		std::string str = fmt::format("{0}.{1}.{2}.{3}", version_1, version_2, version_3, version_4);
+		return str;
+#endif // _lib_sp_use_fmt_
+
+		return std::string("1.0.0.20092020");
 	}
 
 	/*

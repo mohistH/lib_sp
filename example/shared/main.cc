@@ -5,6 +5,7 @@
 #include <memory>
 #include <chrono>
 #include <thread>
+
 using namespace std;
 
 
@@ -160,6 +161,7 @@ int main(int argc, char *argv[])
 
 	// set comm name
 	spp._name = std::string("COM" + to_string(sp_id));
+	spp._is_to_log = true;
 
 	// to get function's return value
 	int ret_val;
@@ -281,6 +283,8 @@ int main(int argc, char *argv[])
 	}
 
 //---------------------------------------------------------------------------------
+
+
 #ifdef compiler_is_vs
 	system("pause");
 #endif // compiler_is_vs

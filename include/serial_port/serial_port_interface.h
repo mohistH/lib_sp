@@ -188,6 +188,8 @@ extern "C" {
 		// operate mode
 		operator_mode	_op_mode;
 
+		// log file 
+		bool			_is_to_log =false;
 
 		void zero() noexcept
 		{
@@ -198,6 +200,7 @@ extern "C" {
 			_stop_bits	= stop_1;
 			_flow_ctl	= flow_ctl_none;
 			_op_mode	= mode_async;
+			_is_to_log	= false;
 		}
 
 		serial_port_prop_() noexcept

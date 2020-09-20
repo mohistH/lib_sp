@@ -12,12 +12,39 @@
 #include <chrono>
 #include <sstream>
 #include <mutex>
+#include <memory>
+
+
+//----------------------------------------------------------------------------------------
+// to definite use fmt and spdlog
+//----------------------------------------------------------------------------------------
+// fmt
+#ifndef _lib_sp_use_fmt_
+	#define _lib_sp_use_fmt_
+#endif // _lib_sp_use_fmt_
+
+// spdlog
+#ifndef _lib_sp_use_spdlog_
+	#define _lib_sp_use_spdlog_
+#endif // _lib_sp_use_spdlog_
+
+
+
+//----------------------------------------------------------------------------------------
+#ifdef _lib_sp_use_spdlog_
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/rotating_file_sink.h"
+#endif // !_lib_sp_use_spdlog_
+
+#ifdef _lib_sp_use_fmt_
+#include "fmt/format.h"
+#endif //! _lib_sp_use_fmt_
+
 
 // use cxx11 thread 
 //#define use_cxx11_thread  
 
 //--------------------------------------------------------------------------------------
-
 
 namespace lib_sp
 {
@@ -158,6 +185,11 @@ namespace lib_sp
 		// has opened
 		bool				_is_opened	= false;
 
+#ifdef _lib_sp_use_spdlog_
+		// logger 
+		std::shared_ptr<spdlog::logger>	_plog = nullptr;
+#endif //! _lib_sp_use_spdlog_
+
 		void zero() noexcept
 		{
 			_spp.zero();
@@ -165,6 +197,12 @@ namespace lib_sp
 			_is_init	= false;
 			_is_opened	= false;
 			_thread.zero();
+			
+#ifdef _lib_sp_use_spdlog_
+			// logger 
+			_plog		= nullptr;
+#endif //! _lib_sp_use_spdlog_
+
 		}
 
 		serial_port_param_win_() noexcept
@@ -284,6 +322,22 @@ namespace lib_sp
 		* @brief: to get parameters in recv thread
 		*/
 		sp_param_win& get_sp_param_win() noexcept;
+
+
+		/** 
+		*  @ brief: to log some information to log file
+		*/
+		template<typename FormatString, typename... Args>
+		void log(const FormatString &fmt, const Args &... args) noexcept
+		{
+#ifdef _lib_sp_use_spdlog_
+			if (_sp_param._spp._is_to_log)
+			{
+				if (_sp_param._plog)
+					_sp_param._plog->info(fmt, args...);
+			}
+		}
+#endif //! _lib_sp_use_spdlog_
 
 	private:
 		/**

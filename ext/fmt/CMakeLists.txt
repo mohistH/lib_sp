@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.1...3.18)
 
-# Use newer policies if available, up to most recent tested version of CMake.
-if(${CMAKE_VERSION} VERSION_LESS 3.11)
+# Fallback for using newer policies on CMake <3.12.
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
   cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-else()
-  cmake_policy(VERSION 3.11)
 endif()
 
 # Determine if fmt is built as a subproject (using add_subdirectory)
@@ -24,15 +22,23 @@ function(join result_var)
   set(${result_var} "${result}" PARENT_SCOPE)
 endfunction()
 
+include(CMakeParseArguments)
+
 # Sets a cache variable with a docstring joined from multiple arguments:
 #   set(<variable> <value>... CACHE <type> <docstring>...)
 # This allows splitting a long docstring for readability.
 function(set_verbose)
-  cmake_parse_arguments(SET_VERBOSE "" "" "CACHE" ${ARGN})
-  list(GET SET_VERBOSE_CACHE 0 type)
-  list(REMOVE_AT SET_VERBOSE_CACHE 0)
-  join(doc ${SET_VERBOSE_CACHE})
-  set(${SET_VERBOSE_UNPARSED_ARGUMENTS} CACHE ${type} ${doc})
+  # cmake_parse_arguments is broken in CMake 3.4 (cannot parse CACHE) so use
+  # list instead.
+  list(GET ARGN 0 var)
+  list(REMOVE_AT ARGN 0)
+  list(GET ARGN 0 val)
+  list(REMOVE_AT ARGN 0)
+  list(REMOVE_AT ARGN 0)
+  list(GET ARGN 0 type)
+  list(REMOVE_AT ARGN 0)
+  join(doc ${ARGN})
+  set(${var} ${val} CACHE ${type} ${doc})
 endfunction()
 
 # Set the default CMAKE_BUILD_TYPE to Release.
@@ -55,13 +61,12 @@ option(FMT_WERROR "Halt the compilation with an error on compiler warnings."
        OFF)
 
 # Options that control generation of various targets.
-option(FMT_DOC "Generate the doc target." OFF)
-option(FMT_INSTALL "Generate the install target." OFF)
-option(FMT_TEST "Generate the test target." OFF})
+option(FMT_DOC "Generate the doc target." ${MASTER_PROJECT})
+option(FMT_INSTALL "Generate the install target." ${MASTER_PROJECT})
+option(FMT_TEST "Generate the test target." ${MASTER_PROJECT})
 option(FMT_FUZZ "Generate the fuzz target." OFF)
 option(FMT_CUDA_TEST "Generate the cuda-test target." OFF)
-option(FMT_OS "Include core requiring OS (Windows/Posix) " OFF)
-option(BUILD_SHARED_LIBS "create a library of shared " ON)
+option(FMT_OS "Include core requiring OS (Windows/Posix) " ON)
 
 # Get version from core.h
 file(READ include/fmt/core.h core_h)
@@ -102,11 +107,11 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
       -Wold-style-cast -Wundef
       -Wredundant-decls -Wwrite-strings -Wpointer-arith
       -Wcast-qual -Wformat=2 -Wmissing-include-dirs
-      -Wcast-align -Wnon-virtual-dtor
+      -Wcast-align
       -Wctor-dtor-privacy -Wdisabled-optimization
       -Winvalid-pch -Woverloaded-virtual
-      -Wconversion -Wswitch-enum
-      -Wno-ctor-dtor-privacy -Wno-format-nonliteral -Wno-shadow)
+      -Wconversion -Wswitch-enum -Wundef
+      -Wno-ctor-dtor-privacy -Wno-format-nonliteral)
   if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.6)
       set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS} -Wnoexcept
          -Wno-dangling-else -Wno-unused-local-typedefs)
@@ -124,8 +129,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(PEDANTIC_COMPILE_FLAGS -Wall -Wextra -pedantic -Wconversion
-      -Wno-sign-conversion -Wdeprecated -Wweak-vtables)
+  set(PEDANTIC_COMPILE_FLAGS -Wall -Wextra -pedantic -Wconversion -Wundef
+      -Wdeprecated -Wweak-vtables)
   check_cxx_compiler_flag(-Wzero-as-null-pointer-constant HAS_NULLPTR_WARNING)
   if (HAS_NULLPTR_WARNING)
     set(PEDANTIC_COMPILE_FLAGS ${PEDANTIC_COMPILE_FLAGS}

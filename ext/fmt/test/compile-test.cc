@@ -114,20 +114,20 @@ TEST(CompileTest, MultipleTypes) {
   EXPECT_EQ(fmt::format(f, 42, 42), "42 42");
 }
 
-struct formattable {};
+struct test_formattable {};
 
 FMT_BEGIN_NAMESPACE
-template <> struct formatter<formattable> : formatter<const char*> {
+template <> struct formatter<test_formattable> : formatter<const char*> {
   template <typename FormatContext>
-  auto format(formattable, FormatContext& ctx) -> decltype(ctx.out()) {
+  auto format(test_formattable, FormatContext& ctx) -> decltype(ctx.out()) {
     return formatter<const char*>::format("foo", ctx);
   }
 };
 FMT_END_NAMESPACE
 
 TEST(CompileTest, FormatUserDefinedType) {
-  auto f = fmt::detail::compile<formattable>("{}");
-  EXPECT_EQ(fmt::format(f, formattable()), "foo");
+  auto f = fmt::detail::compile<test_formattable>("{}");
+  EXPECT_EQ(fmt::format(f, test_formattable()), "foo");
 }
 
 TEST(CompileTest, EmptyFormatString) {
@@ -146,11 +146,20 @@ TEST(CompileTest, FormatDefault) {
   EXPECT_EQ("4.2", fmt::format(FMT_COMPILE("{}"), 4.2));
   EXPECT_EQ("foo", fmt::format(FMT_COMPILE("{}"), "foo"));
   EXPECT_EQ("foo", fmt::format(FMT_COMPILE("{}"), std::string("foo")));
-  EXPECT_EQ("foo", fmt::format(FMT_COMPILE("{}"), formattable()));
+  EXPECT_EQ("foo", fmt::format(FMT_COMPILE("{}"), test_formattable()));
+}
+
+TEST(CompileTest, FormatWideString) {
+  EXPECT_EQ(L"42", fmt::format(FMT_COMPILE(L"{}"), 42));
 }
 
 TEST(CompileTest, FormatSpecs) {
   EXPECT_EQ("42", fmt::format(FMT_COMPILE("{:x}"), 0x42));
+}
+
+TEST(CompileTest, DynamicWidth) {
+  EXPECT_EQ("  42foo  ",
+            fmt::format(FMT_COMPILE("{:{}}{:{}}"), 42, 4, "foo", 5));
 }
 
 TEST(CompileTest, FormatTo) {
@@ -160,7 +169,16 @@ TEST(CompileTest, FormatTo) {
   EXPECT_STREQ("42", buf);
 }
 
+TEST(CompileTest, FormatToNWithCompileMacro) {
+  constexpr auto buffer_size = 8;
+  char buffer[buffer_size];
+  auto res = fmt::format_to_n(buffer, buffer_size, FMT_COMPILE("{}"), 42);
+  *res.out = '\0';
+  EXPECT_STREQ("42", buffer);
+}
+
 TEST(CompileTest, TextAndArg) {
   EXPECT_EQ(">>>42<<<", fmt::format(FMT_COMPILE(">>>{}<<<"), 42));
+  EXPECT_EQ("42!", fmt::format(FMT_COMPILE("{}!"), 42));
 }
 #endif

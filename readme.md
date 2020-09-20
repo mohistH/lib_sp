@@ -133,10 +133,10 @@ sp_release(_psp);
   If you dont have any physical serial port, **Configure Virtual Serial Port Driver** could  create more available virtual serial port pairs. **Note**, virtual serial port must be used in pairs. Like **10** and **20**, **11** and **21**   
   > ### 6.1 configure serial port
   use **Configure Virtual Serial Port Driver** to add and delete serial port pairs  
-![Image](https://github.com/mohistH/lib_sp/blob/master/other_tools/sp_vsp.png)
+![Image](https://github.com/mohistH/lib_sp/master/other_tools/sp_vsp.png)
   > ### 6.2 Access port  
   This tool could monitor and communicate with serial port.  
-![Image](https://github.com/mohistH/lib_sp/blob/master/other_tools/sp_acceport.png)
+![Image](https://github.com/mohistH/lib_sp/master/other_tools/sp_acceport.png)
 
 
 ## 7 License  

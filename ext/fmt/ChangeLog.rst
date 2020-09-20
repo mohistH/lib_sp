@@ -1,3 +1,32 @@
+7.0.3 - 2020-08-06
+------------------
+
+* Worked around broken ``numeric_limits`` for 128-bit integers
+  (`#1787 <https://github.com/fmtlib/fmt/issues/1787>`_).
+
+* Added error reporting on missing named arguments
+  (`#1796 <https://github.com/fmtlib/fmt/issues/1796>`_).
+
+* Stopped using 128-bit integers with clang-cl
+  (`#1800 <https://github.com/fmtlib/fmt/pull/1800>`_).
+  Thanks `@Kingcom <https://github.com/Kingcom>`_.
+
+* Fixed issues in locale-specific integer formatting
+  (`#1782 <https://github.com/fmtlib/fmt/issues/1782>`_,
+  `#1801 <https://github.com/fmtlib/fmt/issues/1801>`_).
+
+7.0.2 - 2020-07-29
+------------------
+
+* Worked around broken ``numeric_limits`` for 128-bit integers
+  (`#1725 <https://github.com/fmtlib/fmt/issues/1725>`_).
+
+* Fixed compatibility with CMake 3.4
+  (`#1779 <https://github.com/fmtlib/fmt/issues/1779>`_).
+
+* Fixed handling of digit separators in locale-specific formatting
+  (`#1782 <https://github.com/fmtlib/fmt/issues/1782>`_).
+
 7.0.1 - 2020-07-07
 ------------------
 

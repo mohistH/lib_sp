@@ -5,7 +5,7 @@
 #define version_1 1
 #define version_2 0
 #define version_3 1
-#define version_4 "19092020"
+#define version_4 20092020
 
 
 
