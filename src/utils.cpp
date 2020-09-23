@@ -1,11 +1,13 @@
 #include "utils.h"
+
 #ifdef os_is_win
 #include <stringapiset.h>
 #include <tchar.h>
-#endif // 
+#endif //!os_is_win
 
 namespace utils
 {
+
 	/**
 	*	@brief:
 	*/
@@ -58,12 +60,12 @@ namespace utils
 	*/
 	long helper::cs_to_l(const CString& str, const int base /*= 10*/)
 	{
-		// 方法1
+		// ????1
 			// return _wtoi(str);
 
-			// 方法2
+			// ????2
 		USES_CONVERSION;
-		// 第一个参数：字符串， 第二个参数，默认0， 第三个参数：进制，10-10进制，16-16进制
+		// ?????????????????? ??????????????0?? ?????????????????10-10?????16-16????
 		return strtol(W2A(str), 0, base);
 	}
 
@@ -89,7 +91,7 @@ namespace utils
 	*/
 	CString helper::pchar_to_cs(const char* parr)
 	{
-		// 为空？ 那就返回空
+		// ???? ???????
 		if (NULL == parr || nullptr == parr)
 			return CString(L"");
 
@@ -209,10 +211,10 @@ namespace utils
 				return;
 
 			int iLength = 0;
-			//获取字节长度   
+			//?????????   
 			iLength = WideCharToMultiByte(CP_ACP, 0, ptchar_arr, -1, NULL, 0, NULL, NULL);
 
-			//将tchar值赋给_char    
+			//??tchar?????_char    
 			WideCharToMultiByte(CP_ACP, 0, ptchar_arr, -1, pchar_arr, iLength, NULL, NULL);
 		};
 
@@ -227,13 +229,13 @@ namespace utils
 		std::string str_ret_val(path);
 		int last_pos = str_ret_val.find_last_of('\\');
 
-		// 找不到\\，直接返回
+		// ?????\\????????
 		if (-1 == last_pos)
 		{
 		}
 		else
 		{
-			// 找到了，去除最后的F.exe
+			// ?????????????F.exe
 			str_ret_val = str_ret_val.substr(0, last_pos);
 		}
 
@@ -245,3 +247,8 @@ namespace utils
 
 	} 
 }/// utils
+
+
+
+
+

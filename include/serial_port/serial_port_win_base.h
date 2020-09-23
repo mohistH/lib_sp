@@ -1,5 +1,6 @@
 #pragma once
 #include "serial_port/serial_port_interface.h"
+#include "serial_port/constdef.h"
 
 // to check if os is win
 #ifdef os_is_win
@@ -19,26 +20,22 @@
 // to definite use fmt and spdlog
 //----------------------------------------------------------------------------------------
 // fmt
-#ifndef _lib_sp_use_fmt_
-	#define _lib_sp_use_fmt_
-#endif // _lib_sp_use_fmt_
+#ifndef use_fmt
+// #define use_fmt
+#endif // use_fmt
 
 // spdlog
-#ifndef _lib_sp_use_spdlog_
-	#define _lib_sp_use_spdlog_
-#endif // _lib_sp_use_spdlog_
-
-
+#ifndef use_spdlog
+	 #define use_spdlog
+#endif // use_spdlog
 
 //----------------------------------------------------------------------------------------
-#ifdef _lib_sp_use_spdlog_
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/rotating_file_sink.h"
-#endif // !_lib_sp_use_spdlog_
+#ifdef use_spdlog
+	#include "spdlog/spdlog.h"
+	#include "spdlog/sinks/rotating_file_sink.h"
+#endif // !use_spdlog
 
-#ifdef _lib_sp_use_fmt_
-#include "fmt/format.h"
-#endif //! _lib_sp_use_fmt_
+
 
 
 // use cxx11 thread 
@@ -48,15 +45,6 @@
 
 namespace lib_sp
 {
-	/*
-	* @brief: the version information and others enumeration
-	*/
-	enum
-	{
-		// max_buffer_read  1k
-		len_buf_1024 = 1024,
-
-	};
 
 	/*
 	* @brief: thread params
@@ -171,7 +159,7 @@ namespace lib_sp
 	struct serial_port_param_win_
 	{
 		// to get serial port's properties
-		serial_port_prop	_spp;
+		sp_prop	_spp;
 
 		// thread params
 		comm_info_win		_comm_info;
@@ -185,10 +173,10 @@ namespace lib_sp
 		// has opened
 		bool				_is_opened	= false;
 
-#ifdef _lib_sp_use_spdlog_
+#ifdef use_spdlog
 		// logger 
 		std::shared_ptr<spdlog::logger>	_plog = nullptr;
-#endif //! _lib_sp_use_spdlog_
+#endif //! use_spdlog
 
 		void zero() noexcept
 		{
@@ -198,10 +186,10 @@ namespace lib_sp
 			_is_opened	= false;
 			_thread.zero();
 			
-#ifdef _lib_sp_use_spdlog_
+#ifdef use_spdlog
 			// logger 
 			_plog		= nullptr;
-#endif //! _lib_sp_use_spdlog_
+#endif //! use_spdlog
 
 		}
 
@@ -241,9 +229,14 @@ namespace lib_sp
 						nullptr - doesnt recv data
 		*  @ return - int
 					0 - success
-					-1 - failure, the serial port name is null 
+					-1 - failure, the spp.name is null
+					-2 - failure, the spp._baud_rate is unknow
+					-3 - failure, the spp._stop_bits is unknow
+					-4 - failure, the spp._data_bits is unknow
+					-5 - failure, the spp._flow_ctl is unknow
+					-6 - failure, the spp._parity is unknow
 		*/
-		int init(const serial_port_prop& spp, irecv_data* precv_data = nullptr) noexcept;
+		int init(const sp_prop& spp, irecv_data* precv_data = nullptr) noexcept;
 
 		/** 
 		*  @ brief: to open serial port
@@ -302,6 +295,11 @@ namespace lib_sp
 		*/
 		std::string get_version() noexcept;
 
+		/**
+		* @brief: to get available information of serial port
+		*/
+		list_sp_name get_available_serial_port() noexcept;
+
 		
 //----------------------------------------------------------------------------------------
 		
@@ -330,14 +328,15 @@ namespace lib_sp
 		template<typename FormatString, typename... Args>
 		void log(const FormatString &fmt, const Args &... args) noexcept
 		{
-#ifdef _lib_sp_use_spdlog_
+#ifdef use_spdlog
 			if (_sp_param._spp._is_to_log)
 			{
 				if (_sp_param._plog)
 					_sp_param._plog->info(fmt, args...);
 			}
+#endif //! use_spdlog
 		}
-#endif //! _lib_sp_use_spdlog_
+
 
 	private:
 		/**
@@ -360,7 +359,7 @@ namespace lib_sp
 
 	private:
 		sp_param_win	_sp_param;
-	};
+	}; // end class
 }
 
 #endif //!has_cxx_11

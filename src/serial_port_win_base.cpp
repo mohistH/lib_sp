@@ -1,15 +1,23 @@
 #include "serial_port/serial_port_win_base.h"
 
 
-
 // to check if os is win
 #ifdef os_is_win
 #include <process.h>
 #include "utils.h"
-using namespace utils;
+#include "serial_port/serial_port_params.h"
+
+#include <tchar.h>      // Includes the string functions.
+#include <windows.h>    // Includes basic windows functionality.
+#include <setupapi.h>   // Includes the SetupAPI.
 
 // to check cxx11 status
 #ifdef has_cxx_11
+
+#ifdef use_fmt
+#include "fmt/format.h"
+#endif //! use_fmt
+
 //--------------------------------------------------------------------------------------
 
 namespace lib_sp
@@ -36,7 +44,7 @@ namespace lib_sp
 
 			if (_sp_param._spp._is_to_log)
 			{
-#ifdef _lib_sp_use_spdlog_
+#ifdef use_spdlog
 				try
 				{
 					if (_sp_param._plog)
@@ -47,7 +55,7 @@ namespace lib_sp
 					// an error occured, but do anything
 				}
 
-#endif // _lib_sp_use_spdlog_
+#endif // use_spdlog
 			}
 			
 
@@ -62,19 +70,16 @@ namespace lib_sp
 	/*
 	*	@brief:
 	*/
-	int serial_port_win_base::init(const serial_port_prop& spp, irecv_data* precv_data /*= nullptr*/) noexcept
+	int serial_port_win_base::init(const sp_prop& spp, irecv_data* precv_data /*= nullptr*/) noexcept
 	{
 		int ret_val = 0;
 
-		// 1. to check serial port id, 0 is false
-		if (0 == spp._name.length())
-		{
-			ret_val = -1;
-			log("init-failure, the comm's name is null");
+		// 1. to check params
+		ret_val = sp_params_check::get_instance().is_right(std::move(spp));
+		if (0 != ret_val)
 			return ret_val;
-		}
 
-		// 2. to get paraps 
+		// 2. to get params 
 		_sp_param._spp = spp;
 
 		// 3. to get recv_data obj
@@ -85,14 +90,14 @@ namespace lib_sp
 		_sp_param._is_init = true;
 
 
-#ifdef _lib_sp_use_spdlog_
+#ifdef use_spdlog
 		if (_sp_param._spp._is_to_log)
 		{
 			auto max_size = 1024 * 1024 * 5;
 			auto max_files = 3;
 			_sp_param._plog = spdlog::rotating_logger_mt("lib_sp_log", "log/lib_sp_log.log", max_size, max_files);
 		}
-#endif //! _lib_sp_use_spdlog_
+#endif //! use_spdlog
 
 		log("init-success");
 
@@ -109,7 +114,7 @@ namespace lib_sp
 		int ret_val					= 0;
 
 		comm_info_win& com			= _sp_param._comm_info;
-		serial_port_prop& spp		= _sp_param._spp;
+		sp_prop& spp				= _sp_param._spp;
 		sp_param_win& param			= _sp_param;
 		sp_thread_win& sp_thread	= _sp_param._thread;
 
@@ -133,7 +138,7 @@ namespace lib_sp
 		TCHAR *tc_com_name			= nullptr;
 		spp._name					= std::string("\\\\.\\") + spp._name;
 #ifdef UNICODE
-		std::wstring wstr			= helper::str2wstr(spp._name);
+		std::wstring wstr			= utils::helper::str2wstr(spp._name);
 		tc_com_name					= const_cast<TCHAR *>(wstr.c_str());
 #else
 		tc_com_name					= const_cast<TCHAR*>(spp._name.c_str());
@@ -365,7 +370,7 @@ namespace lib_sp
 			// 2. to check comm status
 			if (is_opened())
 			{
-				serial_port_prop& spp	= _sp_param._spp;
+				sp_prop& spp	= _sp_param._spp;
 				comm_info_win& comm		= _sp_param._comm_info;
 				BOOL	breturn			= TRUE;
 				BOOL	bwrite			= TRUE;
@@ -392,8 +397,10 @@ namespace lib_sp
 						case ERROR_IO_PENDING:
 						{
 							bwrite			= FALSE;
-							// log("send-failure 395, an error occurred while writing, GetLastError() ={}", error_id);
+							log("send-success(400)");
 							len_real_write	= -1;
+
+							ret_val = data_len;
 						}
 						break;
 
@@ -425,7 +432,7 @@ namespace lib_sp
 					else
 					{
 						// it written successfully
-						log("send-success");
+						log("send-success(433)");
 					}
 
 					// 
@@ -490,12 +497,173 @@ namespace lib_sp
 	*/
 	std::string serial_port_win_base::get_version() noexcept
 	{
-#ifdef _lib_sp_use_fmt_
-		std::string str = fmt::format("{0}.{1}.{2}.{3}", version_1, version_2, version_3, version_4);
-		return str;
-#endif // _lib_sp_use_fmt_
+		return utils::helper::str_format("%d.%d.%d.%d", version_1, version_2, version_3, version_4);
+	}
 
-		return std::string("1.0.0.20092020");
+
+	/**
+	*	@brief:
+	*/
+	lib_sp::list_sp_name serial_port_win_base::get_available_serial_port() noexcept 
+	{
+		// 1. to prepare parameters
+		lib_sp::sp_name_desc sp_info_item;
+		list_sp_name list_sp;
+
+		try
+		{
+			HDEVINFO hdev_info = INVALID_HANDLE_VALUE;
+			// to get information
+			hdev_info = SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT,
+				NULL,
+				NULL,
+				DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+
+			if (INVALID_HANDLE_VALUE != hdev_info)
+			{
+				SP_DEVICE_INTERFACE_DETAIL_DATA *pdev_data = nullptr;
+				DWORD didd_size = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA) + 256;
+
+				pdev_data = (SP_DEVICE_INTERFACE_DETAIL_DATA*)new(std::nothrow) char[didd_size];
+				if (NULL != pdev_data && nullptr != pdev_data)
+				{
+					// 
+					pdev_data->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+					SP_DEVICE_INTERFACE_DATA did_item = { 0 };
+					did_item.cbSize = sizeof(did_item);
+
+					// alright, to get dev info
+					BOOL ret_val = TRUE;
+					for (DWORD index = 0; ret_val; index++)
+					{
+						// to get the device interfaces
+						ret_val = SetupDiEnumDeviceInterfaces(hdev_info,	// DeviceInfoSet
+							NULL,		// DeviceInfoData
+							&GUID_DEVINTERFACE_COMPORT, // InterfaceClassGuid
+							index,		// MemberIndex 
+							&did_item);	// DeviceInterfaceData
+
+						if (ret_val)
+						{
+							SP_DEVINFO_DATA dev_data = { sizeof(SP_DEVINFO_DATA) };
+
+							// to get dev details
+							ret_val = SetupDiGetDeviceInterfaceDetail(hdev_info,	// DeviceInfoSet
+								&did_item,	// DeviceInterfaceData
+								pdev_data,	// DeviceInterfaceDetailData
+								didd_size,	// DeviceInterfaceDetailDataSize
+								NULL,		// RequiredSize
+								&dev_data);// DeviceInfoData
+
+							if (ret_val)
+							{
+								const int buf_size_256 = 256;
+								wchar_t str_description[buf_size_256] = { 0 };
+
+								ret_val = SetupDiGetDeviceRegistryProperty(hdev_info,			// DeviceInfoSet
+									&dev_data,			// DeviceInfoData
+									SPDRP_FRIENDLYNAME,	// Property
+									NULL,				// PropertyRegDataType
+									(PBYTE)str_description,	// PropertyBuffer
+									buf_size_256,		// PropertyBufferSize
+									NULL);				// RequiredSize
+
+								if (ret_val)
+								{
+									wchar_t str_port_name[buf_size_256] = { 0 };
+
+									// to get name
+									HKEY key_dev = SetupDiOpenDevRegKey(hdev_info,	// DeviceInfoSet
+										&dev_data,	// DeviceInfoData
+										DICS_FLAG_GLOBAL,	// Scope	
+										0,			// HwProfile
+										DIREG_DEV,	// KeyType
+										KEY_READ);	// samDesired
+
+									if (INVALID_HANDLE_VALUE != key_dev)
+									{
+										DWORD name_len_255 = 255;
+
+										RegQueryValueEx(key_dev,			// hKey
+											_T("PortName"),		// lpValueName
+											NULL,				// lpReserved
+											NULL,				// lpType
+											(BYTE*)str_port_name,	// lpData
+											&name_len_255);		// lpcbData
+										RegCloseKey(key_dev);
+
+										ret_val = TRUE;
+									}
+									else
+									{
+										ret_val = FALSE;
+									}/// SetupDiOpenDevRegKey
+
+
+									if (ret_val)
+									{
+#ifdef UNICODE
+										sp_info_item._name = utils::helper::wstr2str(str_port_name);
+										sp_info_item._description = utils::helper::wstr2str(str_description);
+#else
+										sp_info_item._name = std::string(str_port_name);
+										sp_info_item._description = std::string(str_description);
+#endif
+										list_sp.push_back(sp_info_item);
+										sp_info_item.zero();
+									}
+									else
+									{
+										// doesnt get the name,
+									}
+								}
+								else
+								{
+
+								} /// SetupDiGetDeviceRegistryProperty
+
+							}
+							else
+							{
+								// an error occurred. 
+								const int error_id = GetLastError();
+								delete[](char*)pdev_data;
+								pdev_data = nullptr;
+								break;
+							} /// SetupDiGetDeviceInterfaceDetail
+						}
+						else
+						{
+
+						} /// SetupDiEnumDeviceInterfaces
+					} /// for
+
+					// to release data
+					delete[](char*)pdev_data;
+					pdev_data = nullptr;
+
+				} ///  if (NULL != pdev_data && nullptr != pdev_data)
+				else
+				{
+
+				}
+
+				// to close after reading
+				SetupDiDestroyDeviceInfoList(hdev_info);
+
+			} // INVALID_HANDLE_VALUE != hdev_info
+			else
+			{
+				// an error occurred
+			}
+		}
+		catch (...)
+		{
+			list_sp.clear();
+		}
+
+		return list_sp;
 	}
 
 	/*
@@ -663,7 +831,7 @@ namespace lib_sp
 		int		ret_val				= 0;
 		sp_param_win& sp_param		= psp_win_base->get_sp_param_win();
 		comm_info_win& comm			= sp_param._comm_info;
-		serial_port_prop& spp		= sp_param._spp;
+		sp_prop& spp		= sp_param._spp;
 		sp_param_win& param			= sp_param;
 		sp_thread_win& sp_thread	= sp_param._thread;
 
@@ -703,7 +871,7 @@ namespace lib_sp
 				if (EV_RXCHAR & event_mask)
 				{
 					ClearCommError(comm._handle, &error_id, &comm_status);
-					if (comm._min_bytes_read_notify <= comm_status.cbInQue) // 设定字符数,默认为 1
+					if (comm._min_bytes_read_notify <= comm_status.cbInQue) // ???????,???? 1
 					{
 						// to read comm data
 						psp_win_base->read_data();
@@ -736,7 +904,7 @@ namespace lib_sp
 	{
 		// to prepare params 
 		comm_info_win& comm			= _sp_param._comm_info;
-		serial_port_prop& spp		= _sp_param._spp;
+		sp_prop& spp		= _sp_param._spp;
 		sp_param_win& param			= _sp_param;
 		sp_thread_win& sp_thread	= _sp_param._thread;
 		DWORD max_size				= lib_sp::len_buf_1024;
@@ -771,7 +939,7 @@ namespace lib_sp
 		static char	arr_read[len_buf_1024] = { 0 };
 		memset(arr_read, 0, len_buf_1024);
 
-		// mode_async 异步读取
+		// mode_async ?????
 		if (lib_sp::mode_async == _sp_param._spp._op_mode)
 		{
 			comm._over_lapped_read.Internal			= 0;
@@ -817,7 +985,7 @@ namespace lib_sp
 		}
 		else
 		{
-			// mode_sync 同步读取
+			// mode_sync ??????
 			DWORD nNumberOfBytesToRead = 0;
 
 			if (ReadFile(comm._handle, (void*)arr_read, (DWORD)max_size, &nNumberOfBytesToRead, NULL))

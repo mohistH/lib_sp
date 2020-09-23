@@ -1,7 +1,18 @@
-cmake_minimum_required(VERSION 3.18)
+﻿cmake_minimum_required(VERSION 3.14)
+
+# 
+IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	# the clang's absolute path 
+	SET (CMAKE_C_COMPILER             "/home/cube/soft_ware/llvm/build/bin/clang") 
+	# the clang's absolute path
+	SET (CMAKE_CXX_COMPILER           "/home/cube/soft_ware/llvm/build/bin/clang++") 
+ENDIF()
+
+
+
 
 #工程名
-project(lib_serial_port VERSION 1.0.2)
+project(lib_serial_port VERSION 1.0.3)
 
 
 # library version
@@ -71,7 +82,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 # set header files
 # -------------------------------------------------------------------------------------
-file(GLOB_RECURSE sp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include/*h)
+file(GLOB_RECURSE sp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
 # set source files
 # -------------------------------------------------------------------------------------
@@ -89,62 +100,91 @@ file(GLOB_RECURSE sp_src ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 # target_link_library(MyEXE PRIVATE Poco::Net Poco::Util)
 # target_compile_definition(MyEXE PRIVATE std_cxx_14)
 
+# -----------------------------------------------------------------------------------------------------------
+# to start to build project
+# -----------------------------------------------------------------------------------------------------------
 
+# build a library  on windows
+# -------------------------------------------------------
 function (lib_sp_build_win used_in_mfc_flag )
-	# windows
-	IF (CMAKE_SYSTEM_NAME MATCHES "Windows")
 
+	# VS compiler
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+		set(version_rc_win "${CMAKE_CURRENT_SOURCE_DIR}/src/version.rc")
+		add_library(${PROJECT_NAME} ${lib_type} ${version_rc_win})
+
+		# -use MFC
 		if(used_in_mfc_flag)
+			target_compile_definitions(${PROJECT_NAME} PRIVATE _AFXDLL)
 			set(CMAKE_MFC_FLAG 2)
 			set(CMAKE_CXX_FLAGS_RELEASE "/MT")
      		set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
-		endif(used_in_mfc_flag)
 		
-		# create serial_port project
-		# add_library(serial_port ${lib_type} )
-				
-		if(MSVC)
-			set(version_rc_win "${CMAKE_CURRENT_SOURCE_DIR}/src/version.rc")
-			add_library(${PROJECT_NAME} ${lib_type} ${version_rc_win})
-		else()
-			add_library(${PROJECT_NAME} ${lib_type} )
-		endif(MSVC)
-			
-		if(used_in_mfc_flag)
-			target_compile_definitions(${PROJECT_NAME} PRIVATE _AFXDLL)
-			
-			# shared dll
+		
+			# mfc shared dll
 			if(lib_type)
 				set(CMAKE_MFC_FLAG  2)
 			# static dll
 			else()
 				set(CMAKE_MFC_FLAG  1)
-			endif()
+			endif(lib_type)
 		endif(used_in_mfc_flag)
 
-		
 
-		if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-			# set vs support cxx11
-			if (MSVC_VERSION GREATER_EQUAL "1910")	# 1910 = VS2017 15.0
-				add_compile_options("/Zc:__cplusplus")
-				target_compile_definitions(${PROJECT_NAME} PRIVATE _X86_ UNICODE _UNICODE)				
-			endif()
-		endif()	
+		# set vs support cxx11
+		if (MSVC_VERSION GREATER_EQUAL "1910")	# 1910 = VS2017 15.0
+			add_compile_options("/Zc:__cplusplus")
+			target_compile_definitions(${PROJECT_NAME} PRIVATE _X86_ UNICODE _UNICODE)		
+			
+		endif(MSVC_VERSION GREATER_EQUAL "1910")
 	
 		# 
 		target_link_libraries(${PROJECT_NAME} PRIVATE setupapi)
-	ENDIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
-	
+
+		# .h and .cxx files
+		target_sources(${PROJECT_NAME} PRIVATE ${sp_src} ${sp_inc})
+
+		# set 
+		target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+		# use c++11
+		target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
+		# vesion
+		set(version_str ${version_1}.${version_2}.${version_3})
+		set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${version_str} SOVERSION 1)
+
+		# to quto third project
+		# ---------------------------------
+		# spdlog
+		include(spdlog)
+		target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+		# fmt
+		#include(fmt)
+		#target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
+
+	endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+
+	# ---------------------------------
+
+endfunction(lib_sp_build_win)
+
+
+
+# build a library  on linux
+# -------------------------------------------------------
+function(lib_sp_build_linux)
+	# create project
+	add_library(${PROJECT_NAME} ${lib_type})
+
 	# .h and .cxx files
 	target_sources(${PROJECT_NAME} PRIVATE ${sp_src} ${sp_inc})
 
-	# set 
+	# set include directory
 	target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 	# use c++11
 	target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
+
 	# vesion
-	set(version_str ${version_1}.${version_2}.${version_3}.${version_4})
+	set(version_str ${version_1}.${version_2}.${version_3})
 	set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${version_str} SOVERSION 1)
 
 	# to quto third project
@@ -153,12 +193,10 @@ function (lib_sp_build_win used_in_mfc_flag )
 	include(spdlog)
 	target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
 	# fmt
-	include(fmt)
-	target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
+	#include(fmt)
+	#target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 
-	# ---------------------------------
-
-endfunction()
+endfunction(lib_sp_build_linux)
 
 
 
@@ -170,7 +208,17 @@ else()
 	set(PROJECT_NAME "serial_port")
 endif(lib_sp_is_x64)
 
-lib_sp_build_win(used_in_mfc)
+
+IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+	lib_sp_build_linux()
+ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
+	lib_sp_build_win(used_in_mfc)
+ELSEIF (CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+	
+ELSE ()
+	message(STATUS "other platform: ${CMAKE_SYSTEM_NAME}")
+
+ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 
 # create an example of shared library
@@ -213,10 +261,11 @@ ELSEIF (CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 	
 ELSE ()
 	MESSAGE(STATUS "other platform: ${CMAKE_SYSTEM_NAME}")
+
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 
-## 判断编译器
+# 判断编译器
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 # using Clang
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

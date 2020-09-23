@@ -4,10 +4,12 @@
 
 #include <string>
 #include <sstream>
+#include <string.h>
+#include <memory>
 
 #ifdef used_in_mfc
 // MFC CString
-#include <afxstr.h>
+	#include <afxstr.h>
 #endif ///!used_in_mfc
 
 
@@ -20,29 +22,22 @@
 		#define _utils_api_	__declspec(dllimport)
 	#endif /// !_utils_api_
 
-#elif defined(_unix_) || defined(_linux_) || defined(_unix) || defined(_linux) || #elif defined(__APPLE__)
+#elif defined(_unix_) || defined(_linux_) || defined(_unix) || defined(_linux) || defined(__unix)
 //---------------------------------------------------------------------------------------------
-
 	#ifndef _utils_api_
 		#define _utils_api_	__attribute__((visibility ("default")))
 	#endif /// !_utils_api_
 
-#endif /// !
+#endif /// !defined(_WIN32) || defined(_WIN64) || defined(WIN32)
+
 
 
 
 namespace utils
 {
-	/**
-	* @brief:进制枚举 
-	*/
-	enum ubase
-	{
-		// 转为10进制
-		base_to_10 = 10,
-		// 转为16进制
-		base_to_16 = 16,
-	};
+
+//----------------------------------------------------------------------------------------
+
 
 	/**
 	* @brief: its a convenient class
@@ -50,7 +45,9 @@ namespace utils
 	class _utils_api_ helper
 	{
 	public:
+
 	//----------------------------------------------------------------------------------------		
+		
 		/**
 		*  @ brief: std::wstring -> std::string
 		*/
@@ -79,25 +76,23 @@ namespace utils
 		static char * cs_to_pchar(const CString str);
 
 		/** 
-		*  @ brief: long、int、BYTE -> CString
+		*  @ brief: long??int??BYTE -> CString
 		*/
 		template<typename T>
-		static CString l_to_cs(const T& val, const ubase base = base_to_10)
+		static CString l_to_cs(const T& val, const int to_base = 10)
 		{
 			CString str;
 
 			switch (base)
 			{
-				// 转为16进制的字符串
-			case base_to_16:
+				// ??16??????????
+			case 16:
 				str.Format(L"%X", val);
 				break;
 
-			case base_to_10:
+				// to base 10
+			case 10:
 				str.Format(L"%d", val);
-				break;
-
-				// 转为10进制的字符串
 			default:
 				break;
 			}
@@ -106,7 +101,7 @@ namespace utils
 		}
 
 		/** 
-		*  @ brief: float、double -> CString
+		*  @ brief: float??double -> CString
 		*  @ precision - 0-%.0f, 1-%.1f, 2-%.2f....
 		*/
 		template <typename T>
@@ -143,7 +138,7 @@ namespace utils
 		static char * s_to_pchar(const std::string& str);
 
 		/**
-		* @brief: (int、double、float、long、short) -> std::string
+		* @brief: (int??double??float??long??short) -> std::string
 		*/
 		template<typename T>
 		static std::string val_to_s(const T& val)
@@ -159,9 +154,9 @@ namespace utils
 #ifdef has_cxx_11
 		/** 
 		*  @ brief: other type -> std::string
-					other type：
-					int、double、long、long long、 long double
-					unsigned long, unsigned long long、short、WORD、DWROD
+					other type??
+					int??double??long??long long?? long double
+					unsigned long, unsigned long long??short??WORD??DWROD
 		*/
 		template<typename T>
 		static std::string to_str(const T& val)
@@ -214,6 +209,25 @@ namespace utils
 		*/
 		static long double xxs_to_ld(const std::string& str);
 
+
+		/**
+		* @brief: std::string format
+		*/
+		template<typename ... Args>
+		static std::string str_format(const std::string &format, Args ... args)
+		{
+			auto size_buf = std::snprintf(nullptr, 0, format.c_str(), args ...) + 1; 
+			std::unique_ptr<char[]> buf(new(std::nothrow) char[size_buf]);
+
+			if (!buf)
+				return std::string("");
+
+			std::snprintf(buf.get(), size_buf, format.c_str(), args ...);
+
+			return std::string(buf.get(), buf.get() + size_buf - 1); 
+		}
+
+
 #endif /// has_cxx_11
 //----------------------------------------------------------------------------------------
 		/**
@@ -221,5 +235,11 @@ namespace utils
 		*/
 		static std::string get_cwd() ;
 	};
+
+
+
 } /// utils
+
+
+
 

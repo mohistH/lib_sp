@@ -1,44 +1,56 @@
+22-09-2020 V1.0.3
+	1. ubuntu测试完毕，初步测试结果：发送正常 
+	2. 移除fmt库的引用及ext/fmt下的文件
+	3. 解除interface.h中的serial_port_info类，改到接口类中
+	4. example/shared/main.cc示例代码优化
+	5. 解决seral_port_win_base.h中使用spdlog引起的bug(log函数少写了1个"}"
+	6. CMAKE配置文件增加代码优化、增加Linux库生成
+	
+	
+20-09-2020 V1.0.2
+	1. 增加ubuntn测试代码
+
 
 	
 20-09-2020 V1.0.2
-	1、将cmake的配置文件改为modern cmake
-	2、引入fmt和spdlog库，并使用spdlog记录日志，增加宏_lib_sp_use_spdlog_和_lib_sp_use_fmt_
-	3、增加cmake文件，使用fetchcontent管理其他模块（组件，库）
-	4、接口文件中serial_port_prop_结构体增加变量_is_to_log
-	5、接口的初步测试已经通过
+	1.将cmake的配置文件改为modern cmake
+	2.引入fmt和spdlog库，并使用spdlog记录日志，增加宏_lib_sp_use_spdlog_和_lib_sp_use_fmt_
+	3.增加cmake文件，使用fetchcontent管理其他模块（组件，库）
+	4.接口文件中serial_port_prop_结构体增加变量_is_to_log
+	5.接口的初步测试已经通过
 	@todo
-	1、静态库测试
-	2、增加对MFC的支持
-	3、64位动态库测试
+	1.静态库测试
+	2.增加对MFC的支持
+	3.64位动态库测试
 
 19-09-2020 V1.0.1
-	1、增加模板config.h.in 和 version.rc.in
+	1.增加模板config.h.in 和 version.rc.in
 
 
 18-09-2020 V1.0.1
-	1、屏蔽自定义函数返回类型，改为int
-	2、完善函数注释
-	3、改为modern cmake语法
+	1.屏蔽自定义函数返回类型，改为int
+	2.完善函数注释
+	3.改为modern cmake语法
 
 
 
 
 17-09-2020  V1.0.0
-	1、增加cxx11线程接收数据，初步测试通过
-	2、增加read_data函数调用on_recv_data函数（落下了）
-	3、完善代码注释
-	4、增加utils类，包括基础数据类型之间的相互转换，剥离出项目
-	5、增加获取Windows可以用串口的接口
-	6、将部分宏定义分离到universe_def.h中
+	1.增加cxx11线程接收数据，初步测试通过
+	2.增加read_data函数调用on_recv_data函数（落下了）
+	3.完善代码注释
+	4.增加utils类，包括基础数据类型之间的相互转换，剥离出项目
+	5.增加获取Windows可以用串口的接口
+	6.将部分宏定义分离到universe_def.h中
 	todo:
-	1、增加fmt库的引用
-	2、增加spdlog库的引用
-	3、增加记录日志的功能
+	1.增加fmt库的引用
+	2.增加spdlog库的引用
+	3.增加记录日志的功能
 
 
 16-09-2020 V1.0.0
-	1、封装初步完成，测试收发正常
-	2、增加测试用例，且测试接口结果：正常
+	1.封装初步完成，测试收发正常
+	2.增加测试用例，且测试接口结果：正常
 	
 
 	
