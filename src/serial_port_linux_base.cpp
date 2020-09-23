@@ -2,6 +2,7 @@
 #include "serial_port/serial_port_params.h"
 #include "config.h"
 #include "utils.h"
+#include "serial_port/constdef.h"
 
 #ifdef os_is_linux
 
@@ -15,6 +16,8 @@
 #include <string.h>
 #include <termios.h>
 #include <iostream>
+#include <sys/ioctl.h>
+
 using namespace std;
 
 
@@ -79,29 +82,25 @@ namespace lib_sp
 	*/
 	int serial_port_linux_base::open() noexcept
 	{
-		int ret_val = 0;
-
 		// 1. serial port has been opened
 		if (is_opened())
-		{
-			ret_val = -1;
-			return ret_val;
-		}
+			return -1;
 
+		int ret_val = 0;
 		// 2.try to open serial port
-		sp_param_linux &base_param = _sp_param;
-		sp_prop &spp = _sp_param._spp;
+		sp_param_linux &base_param 	= _sp_param;
+		sp_prop &spp 				= _sp_param._spp;
 
 		/*
-			O_RDONLY ÒÔÖ»¶Á·½Ê½´ò¿ª   
-			O_WRONLY ÒÔÖ»Ð´·½Ê½´ò¿ª   	
-			O_RDWR ÒÔ¿É¶Á¿ÉÐ´·½Ê½´ò¿ª
+			O_RDONLY ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½   
+			O_WRONLY ï¿½ï¿½Ö»Ð´ï¿½ï¿½Ê½ï¿½ï¿½   	
+			O_RDWR ï¿½Ô¿É¶ï¿½ï¿½ï¿½Ð´ï¿½ï¿½Ê½ï¿½ï¿½
 
-			O_CREAT Èç¹ûÎÄ¼þ²»´æÔÚÔò´´½¨¸ÃÎÄ¼þ
-			O_EXCL Èç¹ûÊ¹ÓÃO_CREATÑ¡ÏîÇÒÎÄ¼þ´æÔÚ£¬Ôò·µ»Ø´íÎóÏûÏ¢
-			O_NOCTTY Èç¹ûÎÄ¼þÎªÖÕ¶Ë£¬ÄÇÃ´ÖÕ¶Ë²»¿ÉÒÔµ÷ÓÃopenÏµÍ³µ÷ÓÃµÄÄÇ¸ö½ø³ÌµÄ¿ØÖÆÖÕ¶Ë
-			O_TRUNC Èç¹ûÎÄ¼þÒÑ¾­´æÔÚÔóÉ¾³ýÎÄ¼þÖÐÔ­ÓÐÊý¾Ý
-			O_APPEND ÒÔ×·¼ÓµÄ·½Ê½´ò¿ª
+			O_CREAT ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ò´´½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
+			O_EXCL ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½O_CREATÑ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ò·µ»Ø´ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+			O_NOCTTY ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Îªï¿½Õ¶Ë£ï¿½ï¿½ï¿½Ã´ï¿½Õ¶Ë²ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½openÏµÍ³ï¿½ï¿½ï¿½Ãµï¿½ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ÌµÄ¿ï¿½ï¿½ï¿½ï¿½Õ¶ï¿½
+			O_TRUNC ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			O_APPEND ï¿½ï¿½×·ï¿½ÓµÄ·ï¿½Ê½ï¿½ï¿½
 		*/
 		base_param._fd = ::open(spp._name.c_str(), O_RDWR  | O_NOCTTY | O_NDELAY);
 
@@ -118,6 +117,8 @@ namespace lib_sp
 		{
 			// ret_val = -3;
 			ret_val = errno;
+			
+			this->close();
 			return ret_val;
 		}
 
@@ -126,7 +127,20 @@ namespace lib_sp
 		{
 			// ret_val = -4;
 			ret_val = errno;
+			this->close();
 			return ret_val;
+		}
+
+		// 6. to create a thread to recv data
+		if ((nullptr != _sp_param._thread._precv_data) || (NULL != _sp_param._thread._precv_data))
+		{
+			log(utils::helper::str_format("it will create thread....\n"));
+			// to create recv thread failed
+			if (!start_thread_recv())
+			{
+				ret_val = errno;
+				log(utils::helper::str_format("failed....\n"));
+			}
 		}
 
 		return ret_val;
@@ -147,14 +161,16 @@ namespace lib_sp
 		{
 			try
 			{
+				// to stop recv thread 
+				stop_thread_recv();
 
-			}
-			catch(...)
-			{
 				// call system func to close port
 				::close(_sp_param._fd);
 				_sp_param._fd	= invalid_value;
-
+				
+			}
+			catch(...)
+			{
 				ret_val = errno;
 			}
 		}
@@ -167,7 +183,10 @@ namespace lib_sp
 	*/
 	void serial_port_linux_base::set_read_notify(const unsigned int len) noexcept
 	{
-		_sp_param._others._min_byte_read_notify = len;
+		if (lib_sp::len_buf_1024 < len)
+			_sp_param._others._min_byte_read_notify = lib_sp::len_buf_1024;
+		else
+			_sp_param._others._min_byte_read_notify = std::move(len);
 	}
 
 	/**
@@ -189,6 +208,9 @@ namespace lib_sp
 			return -1;
 		}
 
+
+		lock();
+
 		// 1. comm doesnt opened
 		if (!is_opened())
 		{
@@ -207,6 +229,8 @@ namespace lib_sp
 			ret_val = errno;
 		}
 
+		unlock();
+
 		return ret_val;
 	}
 
@@ -215,7 +239,7 @@ namespace lib_sp
 	*/
 	std::string serial_port_linux_base::get_version() noexcept
 	{
-		return utils::helper::str_format("{0}.{1}.{2}.{3}", version_1, version_2, version_3, version_4);
+		return utils::helper::str_format("%d.%d.%d.%d", version_1, version_2, version_3, version_4);
 	}
 
 	/**
@@ -227,6 +251,8 @@ namespace lib_sp
 		return list_name;
 	}
 
+
+
 	/**
 	*	@brief: to set base params of this port
 	*/
@@ -235,12 +261,12 @@ namespace lib_sp
 
 
 		/**
-		* {unsigned short c_iflag;  ÊäÈëÄ£Ê½±êÖ¾
-		* unsigned short c_oflag;  	Êä³öÄ£Ê½±êÖ¾
-		* unsigned short c_cflag;  	¿ØÖÆÄ£Ê½±êÖ¾
-		* unsigned short c_lflag; 	ÇøÓòÄ£Ê½±êÖ¾»ò±¾µØÄ£Ê½±êÖ¾»ò¾Ö²¿Ä£Ê½
-		* unsigned char c_line; 	ÐÐ¿ØÖÆline discipline 
-		* unsigned char c_cc[NCC];  ¿ØÖÆ×Ö·ûÌØÐÔ,ËùÓÐ¿ÉÒÔ¸ü¸ÄµÄÌØÊâ×Ö·û
+		* {unsigned short c_iflag;  ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½Ö¾
+		* unsigned short c_oflag;  	ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½Ö¾
+		* unsigned short c_cflag;  	ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½Ö¾
+		* unsigned short c_lflag; 	ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½Ö¾ï¿½ò±¾µï¿½Ä£Ê½ï¿½ï¿½Ö¾ï¿½ï¿½Ö²ï¿½Ä£Ê½
+		* unsigned char c_line; 	ï¿½Ð¿ï¿½ï¿½ï¿½line discipline 
+		* unsigned char c_cc[NCC];  ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½Ô¸ï¿½ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½
 		*/
 		int ret_val;
 		struct termios options;
@@ -398,6 +424,111 @@ namespace lib_sp
 
 		return ret_val;
 	}
+
+	/**
+	*	@brief:
+	*/
+	bool serial_port_linux_base::start_thread_recv()
+	{
+		sp_linux_thread& thread_param			= _sp_param._thread;
+		set_thread_recv_data_is_running(true);
+		int ret									= pthread_create(&thread_param._thread_recv, NULL, thread_recv_data_monitor, (void*)this);
+		
+		return (0 > ret) ? false : true;
+	}
+
+	/**
+	*	@brief:
+	*/
+	int serial_port_linux_base::stop_thread_recv()
+	{
+		sp_linux_thread& thread_param = _sp_param._thread;
+		set_thread_recv_data_is_running(false);
+
+		pthread_join(thread_param._thread_recv, NULL);
+
+		thread_param._thread_recv = invalid_value;
+
+		return 0;
+	}
+
+	/**
+	*	@brief:
+	*/
+	void * serial_port_linux_base::thread_recv_data_monitor(void * param)
+	{
+		serial_port_linux_base* sp_obj = reinterpret_cast<serial_port_linux_base*>(param);
+
+		if (NULL == sp_obj || nullptr == sp_obj)
+		{
+			pthread_exit(NULL);
+		}
+		else
+		{
+			sp_param_linux& sp_param		= sp_obj->get_sp_param_linux();
+			sp_linux_thread& thread_param	= sp_param._thread;
+			sp_linux_others& others			= sp_param._others;
+			char buf_read[lib_sp::len_buf_1024]		= { 0 };
+			int has_read_bytes				= 0;
+
+			
+
+			while (sp_obj->get_thread_recv_data_is_running())
+			{
+
+				ioctl(sp_param._fd, FIONREAD, &has_read_bytes);
+
+				// its too longï¿½ï¿½ passed
+				if (lib_sp::len_buf_1024 < has_read_bytes)
+					continue;
+
+
+				// notify the callback function
+				if (has_read_bytes >= others._min_byte_read_notify)
+				{
+					sp_obj->log(" 222222222222222222 notify the callback function......");
+					sp_obj->lock();
+
+					if (sp_obj->is_opened())
+					{
+						sp_obj->log(" 33333333333333333333 notify the callback function......");
+						/*
+						ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½È¡ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½errnoï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½readÖ®Ç°ï¿½Ñµï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Ä©Î²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½readï¿½ï¿½ï¿½ï¿½0
+						*/
+						int ret_read = ::read(sp_param._fd, buf_read, has_read_bytes);
+						if ( 0 < ret_read)
+						{
+							sp_obj->log(" 444444444444444444444444444444 notify the callback function......");
+							if (thread_param._precv_data)
+								thread_param._precv_data->on_recv_data(buf_read, ret_read);
+						}
+						else
+						{
+							// an error occurred, err_id = errno
+							;
+						}
+
+						// reset buffer
+						memset(buf_read, 0, len_buf_1024);
+					}
+					else
+					{
+						// it doesnt open
+					}
+
+					sp_obj->unlock();
+				}
+				else
+				{
+					// continue to prepare data before reading
+				}
+
+			} // end while
+		} // sp_obj is not null
+
+		sp_obj->log(" 555555555555555555555555 its over......");
+		pthread_exit(NULL);
+	} // end thread recv func
 
 }
 

@@ -1,4 +1,11 @@
 22-09-2020 V1.0.3
+	1.增加Linux调试输出函数
+	2.增加Linux创建接收线程，并调用接收函数
+	3.cmake配置文件去掉 构建Windows项目时的used_in_mfc_flag
+
+
+
+22-09-2020 V1.0.3
 	1. ubuntu测试完毕，初步测试结果：发送正常 
 	2. 移除fmt库的引用及ext/fmt下的文件
 	3. 解除interface.h中的serial_port_info类，改到接口类中

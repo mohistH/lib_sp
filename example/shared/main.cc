@@ -318,7 +318,7 @@ int main(int argc, char *argv[])
 //---------------------------------------------------------------------------------------
 #elif defined (os_is_linux)
 
-	bool is_to_send = true ; 
+	bool is_to_send = false ; 
 	if (is_to_send)
 	{
 		std::string str_data = { "123ABC-+=" };

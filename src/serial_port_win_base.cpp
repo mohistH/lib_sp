@@ -353,24 +353,23 @@ namespace lib_sp
 	*/
 	int serial_port_win_base::send(const char* pdata, const unsigned int data_len) 
 	{
-		int ret_val		= 0;
-
 		// 1. to check params
 		if (NULL	== pdata || nullptr == pdata || 0 == data_len)
 		{
 			//ret_val.set(-1, "failure, pdata parameter is null / data_len is 0");
-			ret_val		= -1;
 			log("send-failure, pdata parameter is null / data_len is 0");
 
-			return ret_val;
+			return -1;
 		}
 		
+		int ret_val						= 0;
+
 		try
 		{
 			// 2. to check comm status
 			if (is_opened())
 			{
-				sp_prop& spp	= _sp_param._spp;
+				sp_prop& spp			= _sp_param._spp;
 				comm_info_win& comm		= _sp_param._comm_info;
 				BOOL	breturn			= TRUE;
 				BOOL	bwrite			= TRUE;
@@ -383,6 +382,9 @@ namespace lib_sp
 					comm._over_lapped_write.Offset			= 0;
 					comm._over_lapped_write.OffsetHigh		= 0;
 					comm._over_lapped_write.hEvent			= CreateEvent(NULL, true, false, NULL);
+
+
+					this->lock();
 
 					// The GetLastError code ERROR_IO_PENDING is not a failure; 
 					// it designates the write operation is pending completion asynchronously.
@@ -435,6 +437,8 @@ namespace lib_sp
 						log("send-success(433)");
 					}
 
+					this->unlock();
+
 					// 
 					if (!bwrite)
 					{
@@ -456,6 +460,8 @@ namespace lib_sp
 				} // ib_sp::mode_async- if
 				else
 				{
+					this->lock();
+
 					if (WriteFile(comm._handle, (void*)pdata, (DWORD)data_len, &len_real_write, NULL))
 					{
 						// successfully
@@ -467,6 +473,8 @@ namespace lib_sp
 						ret_val = GetLastError();
 						log("send-failure 461, GetLastError()={}", ret_val);
 					}
+
+					this->lock();
 
 				} /// lib_sp::mode_async end
 
@@ -673,9 +681,9 @@ namespace lib_sp
 	{
 		bool ret_val = false;
 
-		_sp_param._thread._mutex_is_running.lock();
+		_sp_param._thread._mutex_recv.lock();
 		ret_val		= _sp_param._thread._is_running;
-		_sp_param._thread._mutex_is_running.unlock();
+		_sp_param._thread._mutex_recv.unlock();
 
 		return ret_val;
 	}
@@ -685,9 +693,9 @@ namespace lib_sp
 	*/
 	void serial_port_win_base::set_recv_thread_is_running(bool bvalue) noexcept
 	{
-		_sp_param._thread._mutex_is_running.lock();
+		_sp_param._thread._mutex_recv.lock();
 		_sp_param._thread._is_running = bvalue;
-		_sp_param._thread._mutex_is_running.unlock();
+		_sp_param._thread._mutex_recv.unlock();
 	}
 
 	/*
@@ -696,6 +704,22 @@ namespace lib_sp
 	lib_sp::sp_param_win& serial_port_win_base::get_sp_param_win()noexcept
 	{
 		return _sp_param;
+	}
+
+	/**
+	*	@brief:
+	*/
+	void serial_port_win_base::lock()
+	{
+		_sp_param._thread._mutex_recv.lock();
+	}
+
+	/**
+	*	@brief:
+	*/
+	void serial_port_win_base::unlock()
+	{
+		_sp_param._thread._mutex_recv.unlock();
 	}
 
 	/*
@@ -757,14 +781,14 @@ namespace lib_sp
 		try
 		{
 #ifdef use_cxx11_thread
-			sp_thread._thread_recv = std::thread(comm_thread_monitor, this);
+			sp_thread._thread_recv = std::thread(thread_recv_data_monitor, this);
 			// sp_thread._future_recv		= std::async(std::launch::async, comm_thread_monitor, this);
 
 			sp_thread.cxx11_get_thread_recv_id();
 #else
 			sp_thread._handle		= (HANDLE)_beginthreadex(NULL,
 				0,
-				comm_thread_monitor,
+				thread_recv_data_monitor,
 				(LPVOID)this,
 				0,
 				NULL);
@@ -814,7 +838,7 @@ namespace lib_sp
 	/*
 	*	@brief: thread process
 	*/
-	unsigned int __stdcall serial_port_win_base::comm_thread_monitor(void *lpparam) noexcept
+	unsigned int __stdcall serial_port_win_base::thread_recv_data_monitor(void *lpparam) noexcept
 	{
 		serial_port_win_base* psp_win_base = reinterpret_cast<serial_port_win_base*>(lpparam);
 		if (NULL == psp_win_base || nullptr == psp_win_base)
@@ -831,7 +855,7 @@ namespace lib_sp
 		int		ret_val				= 0;
 		sp_param_win& sp_param		= psp_win_base->get_sp_param_win();
 		comm_info_win& comm			= sp_param._comm_info;
-		sp_prop& spp		= sp_param._spp;
+		sp_prop& spp				= sp_param._spp;
 		sp_param_win& param			= sp_param;
 		sp_thread_win& sp_thread	= sp_param._thread;
 
@@ -904,7 +928,7 @@ namespace lib_sp
 	{
 		// to prepare params 
 		comm_info_win& comm			= _sp_param._comm_info;
-		sp_prop& spp		= _sp_param._spp;
+		sp_prop& spp				= _sp_param._spp;
 		sp_param_win& param			= _sp_param;
 		sp_thread_win& sp_thread	= _sp_param._thread;
 		DWORD max_size				= lib_sp::len_buf_1024;
@@ -939,6 +963,9 @@ namespace lib_sp
 		static char	arr_read[len_buf_1024] = { 0 };
 		memset(arr_read, 0, len_buf_1024);
 
+
+		this->lock();
+
 		// mode_async ?????
 		if (lib_sp::mode_async == _sp_param._spp._op_mode)
 		{
@@ -948,6 +975,9 @@ namespace lib_sp
 			comm._over_lapped_read.OffsetHigh		= 0;
 			comm._over_lapped_read.hEvent			= CreateEvent(NULL, true, false, NULL);
 			DWORD nNumberOfBytesToRead				= 0;
+
+
+			
 
 			if (ReadFile(comm._handle, (void*)arr_read, (DWORD)max_size, &nNumberOfBytesToRead, &comm._over_lapped_read))
 			{
@@ -1007,6 +1037,8 @@ namespace lib_sp
 				nNumberOfBytesToRead = (DWORD)-1;
 			}
 		} /// end if mode_operate
+
+		unlock();
 
 		return 0;
 	}

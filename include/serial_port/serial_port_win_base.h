@@ -52,7 +52,7 @@ namespace lib_sp
 	struct serial_port_thread_win_
 	{
 		// to protect _is_running parameter of this structure
-		std::mutex			_mutex_is_running;
+		std::mutex			_mutex_recv;
 
 		// to flag if thread is running
 		bool				_is_running = false;
@@ -338,6 +338,10 @@ namespace lib_sp
 		}
 
 
+		void lock();
+		void unlock();
+
+
 	private:
 		/**
 		* @brief: to set flow control property 
@@ -350,7 +354,7 @@ namespace lib_sp
 		/**
 		* @brief:  the thread of receiving data
 		*/
-		static unsigned int __stdcall comm_thread_monitor(void *lpparam) noexcept;
+		static unsigned int __stdcall thread_recv_data_monitor(void *lpparam) noexcept;
 
 		/**
 		* @brief: to call function ReadFile receives data

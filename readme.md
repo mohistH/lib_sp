@@ -140,6 +140,6 @@ sp_release(_psp);
 
 
 ## 7 License  
-**[3-Clause BSD](https://opensource.org/licenses/BSD-3-Clause)**  
+**[3-Clause BSD](https://opensource.org/licenses/BSD-3-Clause)**
 **[spdlog-License](https://github.com/gabime/spdlog/blob/v1.x/LICENSE)**
 

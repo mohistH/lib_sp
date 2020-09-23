@@ -1,11 +1,15 @@
 #pragma once
 #include "serial_port/serial_port_interface.h"
 #include "serial_port/constdef.h"
+#include <string.h>
 
 #ifdef has_cxx_11
 #ifdef os_is_linux
 
-
+#define linux_is_debug
+#ifdef linux_is_debug
+	#include <iostream>
+#endif // linux_is_debug
 
 
 //----------------------------------------------------------------------------------------
@@ -36,11 +40,19 @@ namespace lib_sp
 	struct serial_port_param_linux_thread_
 	{
 		// to recv data
-		irecv_data	*_precv_data;
+		irecv_data	*_precv_data			= nullptr;
+
+		bool		_thread_recv_is_running = false;
+
+		pthread_t _thread_recv				= invalid_value;
+		pthread_mutex_t _mutex_recv;
 
 		void zero()
 		{
-			_precv_data = nullptr;
+			_precv_data						= nullptr;
+			_thread_recv_is_running			= false;
+			_thread_recv					= invalid_value;
+			memset(&_mutex_recv, 0, sizeof(pthread_mutex_t));
 		}
 
 		serial_port_param_linux_thread_()
@@ -57,10 +69,11 @@ namespace lib_sp
 	*/
 	struct serial_port_param_others_
 	{
-		unsigned int _min_byte_read_notify;
+		unsigned int _min_byte_read_notify	= 1;
+
 		void zero()
 		{
-			_min_byte_read_notify = 0;
+			_min_byte_read_notify			= 1;
 		}
 
 		serial_port_param_others_()
@@ -89,7 +102,6 @@ namespace lib_sp
 
 		// others params
 		sp_linux_others		_others;
-
 
 		void zero()
 		{
@@ -201,11 +213,62 @@ namespace lib_sp
 		*/
 		list_sp_name get_available_serial_port() noexcept;
 
+		/**
+		* @brief: the thread to read data
+		*/
+		static void * thread_recv_data_monitor(void * param);
+
+		/**
+		* @brief: to get recv data thread flag
+		*/
+		bool get_thread_recv_data_is_running()
+		{
+			return _sp_param._thread._thread_recv_is_running;
+		}
+
+		/**
+		* @brief: to set recv data thread flag
+		*/
+		void set_thread_recv_data_is_running(const bool is_running)
+		{
+			_sp_param._thread._thread_recv_is_running = is_running;
+		}
+
+
+		sp_param_linux& get_sp_param_linux()
+		{
+			return _sp_param;
+		}
+
+
+		void lock()
+		{
+			pthread_mutex_lock(&_sp_param._thread._mutex_recv);
+		}
+
+		void unlock()
+		{
+			pthread_mutex_unlock(&_sp_param._thread._mutex_recv);
+		}
+
+
+		void log(std::string str)
+		{
+#ifdef linux_is_debug
+			std::cout << str.c_str() << "\n\n";
+#endif // !linux_is_debug
+		}
+
+
 	private:
 		/**
 		* @brief: set params of this port opened
 		*/
 		int set_port_params();
+
+		bool start_thread_recv();
+		int stop_thread_recv();
+
 
 
 	private:

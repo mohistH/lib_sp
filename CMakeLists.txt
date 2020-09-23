@@ -106,7 +106,7 @@ file(GLOB_RECURSE sp_src ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 # build a library  on windows
 # -------------------------------------------------------
-function (lib_sp_build_win used_in_mfc_flag )
+function (lib_sp_build_win  )
 
 	# VS compiler
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
@@ -114,7 +114,7 @@ function (lib_sp_build_win used_in_mfc_flag )
 		add_library(${PROJECT_NAME} ${lib_type} ${version_rc_win})
 
 		# -use MFC
-		if(used_in_mfc_flag)
+		if(used_in_mfc)
 			target_compile_definitions(${PROJECT_NAME} PRIVATE _AFXDLL)
 			set(CMAKE_MFC_FLAG 2)
 			set(CMAKE_CXX_FLAGS_RELEASE "/MT")
@@ -128,7 +128,7 @@ function (lib_sp_build_win used_in_mfc_flag )
 			else()
 				set(CMAKE_MFC_FLAG  1)
 			endif(lib_type)
-		endif(used_in_mfc_flag)
+		endif(used_in_mfc)
 
 
 		# set vs support cxx11
@@ -212,7 +212,7 @@ endif(lib_sp_is_x64)
 IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	lib_sp_build_linux()
 ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
-	lib_sp_build_win(used_in_mfc)
+	lib_sp_build_win()
 ELSEIF (CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 	
 ELSE ()
