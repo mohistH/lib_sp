@@ -1,4 +1,10 @@
-22-09-2020 V1.0.3
+24-09-2020 V1.0.3
+	1. 增加linux获取可用串口代码
+	2.example下的main.cc增加Linux显示可用串口代码
+
+
+
+23-09-2020 V1.0.3
 	1.增加Linux调试输出函数
 	2.增加Linux创建接收线程，并调用接收函数
 	3.cmake配置文件去掉 构建Windows项目时的used_in_mfc_flag

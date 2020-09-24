@@ -18,6 +18,10 @@
 #include <iostream>
 #include <sys/ioctl.h>
 
+#include <sys/ioctl.h>
+#include <linux/serial.h>
+#include <dirent.h>
+
 using namespace std;
 
 
@@ -247,8 +251,182 @@ namespace lib_sp
 	*/
 	lib_sp::list_sp_name serial_port_linux_base::get_available_serial_port() noexcept
 	{
-		lib_sp::list_sp_name list_name;
-		return list_name;
+
+		// this is from: https://stackoverflow.com/questions/2530096/how-to-find-all-serial-devices-ttys-ttyusb-on-linux-without-opening-them 
+//------------------------------------------------------------------------------------------------------
+		// 1. get_driver
+		auto get_driver = [](const std::string& tty)->std::string
+		{
+			struct stat st;
+			memset(&st, 0, sizeof(struct stat));
+			std::string devicedir = tty;
+
+			// Append '/device' to the tty-path
+			devicedir += "/device";
+
+			// Stat the devicedir and handle it if it is a symlink
+			if (lstat(devicedir.c_str(), &st) == 0 && S_ISLNK(st.st_mode))
+			{
+				char buffer[1024] = { 0 };
+				memset(buffer, 0, sizeof(buffer));
+
+				// Append '/driver' and return basename of the target
+				devicedir += "/driver";
+
+				if (0 < readlink(devicedir.c_str(), buffer, sizeof(buffer)))
+					return basename(buffer);
+			}
+
+			return std::string("");
+		};
+
+
+		// 2.register_comport
+		auto register_comport = [&](std::list<std::string>& comList, std::list<std::string>& comList8250, const std::string& dir)->void
+		{
+			// Get the driver the device is using
+			std::string driver = get_driver(dir);
+
+			// Skip devices without a driver
+			if (0 < driver.size())
+			{
+				std::string devfile = std::string("/dev/") + basename(dir.c_str());
+
+				// Put serial8250-devices in a seperate list
+				if (driver == std::string("serial8250"))
+					comList8250.push_back(devfile);
+				else
+					comList.push_back(devfile);
+			}
+		};
+
+		// 3. probe_serial8250_comports
+		auto probe_serial8250_comports = [&](std::list<std::string>& comList, std::list<std::string> comList8250)->void
+		{
+			struct serial_struct serinfo;
+			std::list<std::string>::iterator it = comList8250.begin();
+
+			// Iterate over all serial8250-devices
+			while (it != comList8250.end())
+			{
+
+				// Try to open the device
+				int fd = ::open(	(*it).c_str(), 
+									O_RDWR | 
+									O_NONBLOCK | 
+									O_NOCTTY );
+
+				if (0 < fd)
+				{
+					// Get serial_info
+					if ( 0 == ioctl(fd, TIOCGSERIAL, &serinfo) )
+					{
+						// If device type is no PORT_UNKNOWN we accept the port
+						if (serinfo.type != PORT_UNKNOWN)
+							comList.push_back(*it);
+					}
+
+					::close(fd);
+				}
+				it++;
+			}
+		};
+
+//----------------------------------------------------------------------------------------=====------------
+	
+		
+		std::list<std::string> comList8250;
+		std::list<std::string> comlist;
+
+		struct dirent **name_list		= nullptr;
+		const std::string str_sys_dir	= { "/sys/class/tty/" };
+		
+
+		int count_name_list = scandir(str_sys_dir.c_str(), &name_list, NULL, NULL);
+
+		if (0 <= count_name_list)
+		{
+			int result			= 0;
+			char *pitem_name	= NULL;
+			for (int index = 0; index < count_name_list; index++)
+			{
+				pitem_name = name_list[index]->d_name;
+				result = strcmp("..", pitem_name) && strcmp(".", pitem_name);
+				if (0 == result)
+				{
+					// the default directory, passed
+				}
+				else
+				{
+					std::string device_dir = str_sys_dir + std::string(name_list[index]->d_name);
+
+					// Register the device
+					register_comport(comlist, comList8250, device_dir);
+
+				}
+				free(name_list[index]);
+			}// end for
+			free(name_list);
+		} // end scandir
+		else
+		{
+			// read error
+		}
+
+		// Only non-serial8250 has been added to comList without any further testing
+		// serial8250-devices must be probe to check for validity
+		probe_serial8250_comports(comlist, comList8250);
+
+
+//--------------------------------------------------------------------------------------------------------
+ 		const std::string str_pts_dir	= { "/dev/pts/" };
+		 count_name_list = scandir(str_pts_dir.c_str(), &name_list, NULL, NULL);
+		if (0 <= count_name_list)
+		{
+			int result			= 0;
+			char *pitem_name	= NULL;
+			for (int index = 0; index < count_name_list; index++)
+			{
+				pitem_name = name_list[index]->d_name;
+				result = strcmp("..", pitem_name) && strcmp(".", pitem_name);
+				if (0 == result)
+				{
+					// the default directory, passed
+				}
+				else
+				{
+					std::string device_dir = str_sys_dir + std::string(name_list[index]->d_name);
+					comlist.push_back(device_dir);	
+				}
+				free(name_list[index]);
+			}// end for
+			free(name_list);
+
+		} // end if
+		else
+		{
+			// read error , 
+		}
+	
+
+//----------------------------------------------------------------------------------------
+		// copy the name from comlist to lib_sp::list_sp_name
+		
+		lib_sp::list_sp_name ret_list;
+		sp_name_desc item_list;
+
+		std::list<std::string>::iterator it = comlist.begin();
+
+		while (it != comlist.end())
+		{
+			item_list._name = (*it);
+			ret_list.push_back(item_list);
+			item_list.zero();
+
+			it++;
+		}
+		
+		return ret_list;
 	}
 
 
@@ -258,8 +436,6 @@ namespace lib_sp
 	*/
 	int serial_port_linux_base::set_port_params()
 	{
-
-
 		/**
 		* {unsigned short c_iflag;  ����ģʽ��־
 		* unsigned short c_oflag;  	���ģʽ��־

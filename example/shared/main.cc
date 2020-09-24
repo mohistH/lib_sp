@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 
 	// 0.to get available serial port
 //----------------------------------------------------------------------------------------
-#ifdef os_is_win
+#if defined(os_is_win)
 	cout << "\n\n before started, it will show available comm information\n\n";
 
 	list_sp_name sp_list = sp->get_avail_serial_port();
@@ -180,6 +180,15 @@ int main(int argc, char *argv[])
 	cout << sp_id << " is to send data ? (0 - false, 1 - true): ";
 	cin >> is_send;
 
+#elif defined(os_is_linux)
+
+	list_sp_name sp_list = sp->get_avail_serial_port();
+	if (0 != sp_list.size())
+	{
+		for (auto item : sp_list)
+			cout << "\nname = " << item._name.c_str() << ", description = " << item._description.c_str() << "\n";
+	}
+	
 #endif //!os_is_win
 
 
@@ -341,7 +350,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		cout << "waiting for data...... (10s)\n\n\n";
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000 * 10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000 * 20));
 	}
 
 
